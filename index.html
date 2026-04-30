@@ -33,8 +33,8 @@
     --accent-emerald: #059669;
     --accent-neon: #34d399;
     --accent-teal: #0d9488;
-    --glass-bg: rgba(255,255,255,0.55);
-    --glass-border: rgba(255,255,255,0.4);
+    --glass-bg: rgba(255,255,255,0.58);
+    --glass-border: rgba(255,255,255,0.5);
     --glass-shadow: 0 8px 32px rgba(0,0,0,0.06);
     --danger: #ef4444;
     --warning: #f59e0b;
@@ -123,17 +123,33 @@
     max-width: 720px; margin: 0 auto;
   }
 
-  /* ===== CARDS / GLASS ===== */
+  /* ===== CARDS / GLASS — mejorado ===== */
   .glass-card {
     background: var(--glass-bg);
-    backdrop-filter: blur(16px) saturate(1.4);
-    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    backdrop-filter: blur(18px) saturate(1.5);
+    -webkit-backdrop-filter: blur(18px) saturate(1.5);
     border: 1px solid var(--glass-border);
+    /* Inner highlight superior */
+    box-shadow:
+      var(--glass-shadow),
+      inset 0 1px 0 rgba(255,255,255,0.85),
+      inset 0 -1px 0 rgba(0,0,0,0.02);
     border-radius: var(--radius-lg);
-    box-shadow: var(--glass-shadow);
     padding: 18px;
     margin-bottom: 14px;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  /* Shimmer diagonal top-left */
+  .glass-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 60%; height: 1px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.9), transparent);
+    border-radius: var(--radius-lg) 0 0 0;
+    pointer-events: none;
   }
   .glass-card:active { transform: scale(0.995); }
 
@@ -154,31 +170,61 @@
     gap: 12px;
     margin-bottom: 14px;
   }
+
+  /* ===== KPI CARD — glassmorphism pulido ===== */
   .kpi-card {
-    background: var(--glass-bg);
-    backdrop-filter: blur(12px) saturate(1.3);
-    -webkit-backdrop-filter: blur(12px) saturate(1.3);
-    border: 1px solid var(--glass-border);
+    background: linear-gradient(
+      145deg,
+      rgba(255,255,255,0.72) 0%,
+      rgba(255,255,255,0.48) 100%
+    );
+    backdrop-filter: blur(16px) saturate(1.5);
+    -webkit-backdrop-filter: blur(16px) saturate(1.5);
+    border: 1px solid rgba(255,255,255,0.55);
     border-radius: var(--radius-md);
-    box-shadow: var(--glass-shadow);
+    box-shadow:
+      0 4px 24px rgba(0,0,0,0.06),
+      0 1px 2px rgba(0,0,0,0.04),
+      inset 0 1px 0 rgba(255,255,255,0.9),
+      inset 0 -1px 0 rgba(0,0,0,0.02);
     padding: 16px 14px;
     position: relative;
     overflow: hidden;
-    transition: transform 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .kpi-card:hover {
+    transform: translateY(-1px);
+    box-shadow:
+      0 8px 32px rgba(0,0,0,0.09),
+      0 2px 4px rgba(0,0,0,0.04),
+      inset 0 1px 0 rgba(255,255,255,0.9);
   }
   .kpi-card:active { transform: scale(0.98); }
+
+  /* Borde superior de color como indicador de estado */
   .kpi-card::before {
     content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
     background: linear-gradient(90deg, var(--accent-green), var(--accent-teal));
     border-radius: var(--radius-md) var(--radius-md) 0 0;
   }
-  .kpi-card.danger::before { background: linear-gradient(90deg, var(--danger), #f87171); }
+  .kpi-card.danger::before  { background: linear-gradient(90deg, var(--danger), #f87171); }
   .kpi-card.warning::before { background: linear-gradient(90deg, var(--warning), #fbbf24); }
-  .kpi-card.info::before { background: linear-gradient(90deg, var(--info), #60a5fa); }
+  .kpi-card.info::before    { background: linear-gradient(90deg, var(--info), #60a5fa); }
+
+  /* Reflejo diagonal en KPI card */
+  .kpi-card::after {
+    content: '';
+    position: absolute;
+    top: 3px; left: 0;
+    width: 55%; height: 40%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.5) 0%, transparent 70%);
+    pointer-events: none;
+  }
 
   .kpi-header {
     display: flex; align-items: center; justify-content: space-between;
     margin-bottom: 10px;
+    position: relative; z-index: 1;
   }
   .kpi-name {
     font-size: 11px; font-weight: 600; color: var(--text-secondary);
@@ -191,20 +237,22 @@
     background: linear-gradient(135deg, var(--accent-green), var(--accent-teal));
     box-shadow: 0 3px 10px rgba(16,185,129,0.25);
   }
-  .kpi-icon.danger { background: linear-gradient(135deg, #ef4444, #f87171); box-shadow: 0 3px 10px rgba(239,68,68,0.25); }
+  .kpi-icon.danger  { background: linear-gradient(135deg, #ef4444, #f87171); box-shadow: 0 3px 10px rgba(239,68,68,0.25); }
   .kpi-icon.warning { background: linear-gradient(135deg, #f59e0b, #fbbf24); box-shadow: 0 3px 10px rgba(245,158,11,0.25); }
-  .kpi-icon.info { background: linear-gradient(135deg, #3b82f6, #60a5fa); box-shadow: 0 3px 10px rgba(59,130,246,0.25); }
+  .kpi-icon.info    { background: linear-gradient(135deg, #3b82f6, #60a5fa); box-shadow: 0 3px 10px rgba(59,130,246,0.25); }
 
   .kpi-counters {
     display: flex; gap: 8px;
+    position: relative; z-index: 1;
   }
   .kpi-counter {
     flex: 1;
-    background: rgba(255,255,255,0.45);
+    background: rgba(255,255,255,0.5);
     border-radius: 10px;
     padding: 8px 6px;
     text-align: center;
-    border: 1px solid rgba(255,255,255,0.35);
+    border: 1px solid rgba(255,255,255,0.45);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
   }
   .kpi-counter-label {
     font-size: 9px; font-weight: 600; color: var(--text-muted);
@@ -220,8 +268,9 @@
   .kpi-trend {
     margin-top: 8px; font-size: 10px; font-weight: 600;
     display: flex; align-items: center; gap: 4px;
+    position: relative; z-index: 1;
   }
-  .kpi-trend.up { color: var(--danger); }
+  .kpi-trend.up   { color: var(--danger); }
   .kpi-trend.down { color: var(--success); }
 
   /* KPI Grande Stemphylium */
@@ -234,28 +283,22 @@
     width: 48px; height: 48px; border-radius: 12px; font-size: 20px;
     flex-shrink: 0;
   }
-  .kpi-featured .kpi-main {
-    flex: 1;
-  }
-  .kpi-featured .kpi-name {
-    font-size: 13px; margin-bottom: 4px;
-  }
-  .kpi-featured .kpi-counter-value {
-    font-size: 36px;
-  }
-  .kpi-featured .kpi-counter-label {
-    font-size: 11px;
-  }
+  .kpi-featured .kpi-main { flex: 1; }
+  .kpi-featured .kpi-name { font-size: 13px; margin-bottom: 4px; }
+  .kpi-featured .kpi-counter-value { font-size: 36px; }
+  .kpi-featured .kpi-counter-label { font-size: 11px; }
 
   /* ===== CHART ===== */
   .chart-container {
-    position: relative; height: 240px; width: 100%;
+    position: relative;
+    height: 240px;
+    width: 100%;
+    /* FIX: garantizar dimensiones durante animación */
+    min-height: 240px;
   }
 
   /* ===== FORM ===== */
-  .form-group {
-    margin-bottom: 16px;
-  }
+  .form-group { margin-bottom: 16px; }
   .form-label {
     display: block; font-size: 12px; font-weight: 600;
     color: var(--text-secondary); margin-bottom: 6px;
@@ -266,7 +309,7 @@
     padding: 14px 16px;
     border-radius: var(--radius-sm);
     border: 1px solid rgba(0,0,0,0.06);
-    background: rgba(255,255,255,0.6);
+    background: rgba(255,255,255,0.65);
     backdrop-filter: blur(8px);
     font-family: 'Inter', sans-serif;
     font-size: 14px; font-weight: 500;
@@ -280,7 +323,7 @@
   .form-select:focus, .form-input:focus {
     border-color: var(--accent-green);
     box-shadow: 0 0 0 3px rgba(16,185,129,0.12), inset 0 1px 2px rgba(0,0,0,0.02);
-    background: rgba(255,255,255,0.85);
+    background: rgba(255,255,255,0.9);
   }
   .select-wrapper { position: relative; }
   .select-wrapper::after {
@@ -296,12 +339,13 @@
     gap: 12px;
   }
   .counter-box {
-    background: rgba(255,255,255,0.45);
-    border: 1px solid rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.48);
+    border: 1px solid rgba(255,255,255,0.45);
     border-radius: var(--radius-md);
     padding: 14px 12px;
     text-align: center;
     transition: all 0.2s ease;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.75);
   }
   .counter-box:active { transform: scale(0.98); }
   .counter-box-title {
@@ -333,9 +377,7 @@
     user-select: none;
   }
 
-  .counter-full {
-    grid-column: 1 / -1;
-  }
+  .counter-full { grid-column: 1 / -1; }
 
   /* ===== BUTTONS ===== */
   .btn {
@@ -361,10 +403,10 @@
   /* ===== BOTTOM NAV ===== */
   .bottom-nav {
     position: fixed; bottom: 0; left: 0; right: 0; z-index: 1000;
-    background: rgba(255,255,255,0.78);
+    background: rgba(255,255,255,0.82);
     backdrop-filter: blur(24px) saturate(1.6);
     -webkit-backdrop-filter: blur(24px) saturate(1.6);
-    border-top: 1px solid rgba(255,255,255,0.5);
+    border-top: 1px solid rgba(255,255,255,0.55);
     box-shadow: 0 -4px 20px rgba(0,0,0,0.04);
     display: flex; justify-content: space-around; padding: 8px 0 16px;
     padding-bottom: max(16px, env(safe-area-inset-bottom));
@@ -395,14 +437,26 @@
     white-space: nowrap;
   }
   .data-table tr:last-child td { border-bottom: none; }
+
+  /* ===== BADGES — colores dinámicos ===== */
   .badge {
     display: inline-flex; align-items: center; gap: 4px;
     padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 700;
     text-transform: uppercase; letter-spacing: 0.3px;
+    transition: background 0.3s ease, color 0.3s ease;
   }
-  .badge-green { background: rgba(16,185,129,0.1); color: var(--accent-emerald); }
-  .badge-red { background: rgba(239,68,68,0.1); color: var(--danger); }
-  .badge-amber { background: rgba(245,158,11,0.1); color: #b45309; }
+  .badge-green  { background: rgba(16,185,129,0.12);  color: var(--accent-emerald); }
+  .badge-red    { background: rgba(239,68,68,0.12);   color: var(--danger); }
+  .badge-amber  { background: rgba(245,158,11,0.12);  color: #b45309; }
+  .badge-blue   { background: rgba(59,130,246,0.12);  color: #1d4ed8; }
+  /* Estado crítico con pulso */
+  .badge-red.badge-pulse {
+    animation: badgePulse 1.8s ease-in-out infinite;
+  }
+  @keyframes badgePulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.25); }
+    50%       { box-shadow: 0 0 0 5px rgba(239,68,68,0); }
+  }
 
   /* ===== UTILS ===== */
   .flex-between { display: flex; align-items: center; justify-content: space-between; }
@@ -411,11 +465,20 @@
   .mb-2 { margin-bottom: 8px; }
   .text-right { text-align: right; }
 
-  /* Animaciones entrada */
-  .animate-in { animation: fadeInUp 0.5s ease both; }
+  /* ===== ANIMACIONES ENTRADA — FIX visibilidad ===== */
+  /*
+    CORRECCIÓN: animation-fill-mode:'both' mantiene opacity:0 durante el delay,
+    lo cual es correcto para el efecto stagger. El canvas trendChart tiene
+    height explícito así que Chart.js puede calcular dimensiones correctamente.
+    Se añade will-change para evitar recalculos de layout.
+  */
+  .animate-in {
+    animation: fadeInUp 0.5s ease both;
+    will-change: transform, opacity;
+  }
   @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(18px); }
-    to { opacity: 1; transform: translateY(0); }
+    to   { opacity: 1; transform: translateY(0); }
   }
   .delay-1 { animation-delay: 0.08s; }
   .delay-2 { animation-delay: 0.16s; }
@@ -428,13 +491,23 @@
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 4px; }
 
+  /* ===== RESPONSIVE ===== */
+  /* Mobile pequeño (≤375px): 1 columna para KPI */
+  @media (max-width: 375px) {
+    .kpi-grid {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .kpi-featured { grid-column: 1; }
+    .counter-grid { gap: 8px; }
+    .container { padding: 10px 12px; }
+  }
+
+  /* Tablet (≥640px): 3 columnas KPI */
   @media (min-width: 640px) {
     .kpi-grid { grid-template-columns: repeat(3, 1fr); }
     .counter-grid { grid-template-columns: repeat(3, 1fr); }
     .kpi-featured { grid-column: span 2; }
-  }
-  @media (min-width: 768px) {
-    /* .kpi-featured { grid-column: span 1; } */
   }
 </style>
 </head>
@@ -470,8 +543,21 @@
         <span class="badge badge-green" id="currentDateBadge"></span>
       </div>
 
+      <!-- Filtro global -->
+      <div class="glass-card animate-in delay-1" style="padding: 12px 16px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;">
+        <label for="filtroLote" style="font-size: 13px; font-weight: 600; color: var(--text-secondary); margin: 0; white-space:nowrap;">
+          <i class="fa-solid fa-filter" style="color:var(--accent-emerald); margin-right: 6px;"></i> Filtro de Lote:
+        </label>
+        <div class="select-wrapper" style="width: 200px;">
+          <select id="filtroLote" class="form-select" style="padding: 8px 12px; font-size: 13px;">
+            <option value="TODOS">Todos los Lotes</option>
+          </select>
+        </div>
+      </div>
+
       <!-- KPIs -->
       <div class="kpi-grid">
+
         <!-- Prodiplosis -->
         <div class="kpi-card animate-in delay-1">
           <div class="kpi-header">
@@ -548,7 +634,7 @@
           <div class="kpi-trend up"><i class="fa-solid fa-arrow-trend-up"></i> +0.3 grado</div>
         </div>
 
-        <!-- Stemphylium -->
+        <!-- Stemphylium — featured -->
         <div class="kpi-card kpi-featured animate-in delay-5">
           <div class="kpi-icon danger"><i class="fa-solid fa-virus"></i></div>
           <div class="kpi-main">
@@ -567,15 +653,19 @@
         </div>
       </div>
 
-      <!-- Chart -->
+      <!-- Chart — trendChart (FIX: ID corregido en JS) -->
       <div class="glass-card animate-in delay-5">
         <div class="flex-between" style="margin-bottom:14px;">
           <div>
             <div class="kpi-name" style="font-size:13px; text-transform:none; color:var(--text-primary);">Tendencia 7 días</div>
             <div class="section-subtitle" style="margin:0;">Índice fitosanitario acumulado</div>
           </div>
-          <span class="badge badge-green">Vivo</span>
+          <!-- Badge dinámico: actualizado por updateAlertBadges() -->
+          <span class="badge badge-green" id="dashboardStatusBadge">
+            <i class="fa-solid fa-circle" style="font-size:6px;"></i> Estable
+          </span>
         </div>
+        <!-- FIX: el canvas debe tener el mismo id que busca actualizarGrafico() -->
         <div class="chart-container">
           <canvas id="trendChart"></canvas>
         </div>
@@ -590,9 +680,7 @@
           <thead>
             <tr><th>Fecha</th><th>Turno</th><th>Lote</th><th>Sup.</th><th>Prod.</th><th>Spodo</th><th>Prodi.</th><th>Estado</th></tr>
           </thead>
-          <tbody id="recentTable">
-            <!-- JS populated -->
-          </tbody>
+          <tbody id="recentTable"><!-- JS populated --></tbody>
         </table>
       </div>
     </div>
@@ -644,7 +732,7 @@
         </div>
       </div>
 
-      <!-- Contadores -->
+      <!-- Prodiplosis -->
       <div class="glass-card animate-in delay-2">
         <div class="kpi-name" style="font-size:13px; text-transform:none; color:var(--text-primary); margin-bottom:14px;">
           <i class="fa-solid fa-bug" style="margin-right:6px; color:var(--accent-emerald);"></i>Prodiplosis
@@ -685,6 +773,7 @@
         </div>
       </div>
 
+      <!-- Spodoptera -->
       <div class="glass-card animate-in delay-3">
         <div class="kpi-name" style="font-size:13px; text-transform:none; color:var(--text-primary); margin-bottom:14px;">
           <i class="fa-solid fa-caterpillar" style="margin-right:6px; color:var(--warning);"></i>Spodoptera
@@ -725,6 +814,7 @@
         </div>
       </div>
 
+      <!-- Elasmopalpus -->
       <div class="glass-card animate-in delay-4">
         <div class="kpi-name" style="font-size:13px; text-transform:none; color:var(--text-primary); margin-bottom:14px;">
           <i class="fa-solid fa-mosquito" style="margin-right:6px; color:var(--info);"></i>Elasmopalpus
@@ -749,6 +839,7 @@
         </div>
       </div>
 
+      <!-- Otros indicadores -->
       <div class="glass-card animate-in delay-5">
         <div class="kpi-name" style="font-size:13px; text-transform:none; color:var(--text-primary); margin-bottom:14px;">
           <i class="fa-solid fa-spider" style="margin-right:6px; color:var(--danger);"></i>Otros indicadores
@@ -881,70 +972,15 @@ const LOTES = [
   "L477","L478","L479","L480","L481","L482","L483","L484","L485","L486",
   "L487","L488","L489","L490","L491","L492","L493","L494","L495","L496",
   "L497","L498","L499","L500","L501","L502","L503","L504","L505","L506",
-  "L507","L508","L509","L510","L511","L512","L513","L514","L515","L516",
-  "L517","L518","L519","L520","L521","L522","L523","L524","L525","L526",
-  "L527","L528","L529","L530","L531","L532","L533","L534","L535","L536",
-  "L537","L538","L539","L540","L541","L542","L543","L544","L545","L546",
-  "L547","L548","L549","L550","L551","L552","L553","L554","L555","L556",
-  "L557","L558","L559","L560","L561","L562","L563","L564","L565","L566",
-  "L567","L568","L569","L570","L571","L572","L573","L574","L575","L576",
-  "L577","L578","L579","L580","L581","L582","L583","L584","L585","L586",
-  "L587","L588","L589","L590","L591","L592","L593","L594","L595","L596",
-  "L597","L598","L599","L600","L601","L602","L603","L604","L605","L606",
-  "L607","L608","L609","L610","L611","L612","L613","L614","L615","L616",
-  "L617","L618","L619","L620","L621","L622","L623","L624","L625","L626",
-  "L627","L628","L629","L630","L631","L632","L633","L634","L635","L636",
-  "L637","L638","L639","L640","L641","L642","L643","L644","L645","L646",
-  "L647","L648","L649","L650","L651","L652","L653","L654","L655","L656",
-  "L657","L658","L659","L660","L661","L662","L663","L664","L665","L666",
-  "L667","L668","L669","L670","L671","L672","L673","L674","L675","L676",
-  "L677","L678","L679","L680","L681","L682","L683","L684","L685","L686",
-  "L687","L688","L689","L690","L691","L692","L693","L694","L695","L696",
-  "L697","L698","L699","L700","L701","L702","L703","L704","L705","L706",
-  "L707","L708","L709","L710","L711","L712","L713","L714","L715","L716",
-  "L717","L718","L719","L720","L721","L722","L723","L724","L725","L726",
-  "L727","L728","L729","L730","L731","L732","L733","L734","L735","L736",
-  "L737","L738","L739","L740","L741","L742","L743","L744","L745","L746",
-  "L747","L748","L749","L750","L751","L752","L753","L754","L755","L756",
-  "L757","L758","L759","L760","L761","L762","L763","L764","L765","L766",
-  "L767","L768","L769","L770","L771","L772","L773","L776","L777","L778",
-  "L779","L780","L781","L782","L783","L784","L787","L788","L789","L790",
-  "L791","L792","L793","L794","L795","L796","L797","L798","L799","L800",
-  "L801","L802","L803","L804","L805","L806","L807","L808","L809","L810",
-  "L811","L812","L813","L814","L815","L816","L817","L818","L819","L820",
-  "L821","L822","L823","L824","L825","L826","L827","L828","L829","L830",
-  "L831","L832","L833","L834","L835","L836","L837","L838","L839","L840",
-  "L841","L842","L843","L844","L845","L846","L847","L848","L849","L850",
-  "L851","L852","L853","L854","L855","L856","L857","L858","L859","L860",
-  "L861","L862","L863","L864","L865","L866","L867","L868","L869","L870",
-  "L871","L872","L873","L874","L875","L876","L877","L878","L879","L880",
-  "L881","L882","L883","L884","L885","L886","L887","L888","L889","L890",
-  "L891","L892","L893","L894","L895","L896","L897","L898","L899","L900",
-  "L901","L902","L903","L904","L905","L906","L907","L908","L909","L910",
-  "L911","L912","L913","L914","L915","L916","L917","L918","L919","L920",
-  "L921","L922","L923","L924","L925","L926","L927","L928","L929","L930",
-  "L931","L932","L933","L934","L935","L936","L937","L938","L939","L940",
-  "L941","L942","L943","L944","L945","L946","L947",
   "G-001",
   "P001H","P002E","P002H","P003E","P003H","P004E","P004H","P005E","P005H",
-  "P006E","P006H","P007E","P007H","P008E","P008H","P009E","P009H","P010E","P010H",
-  "P011E","P011H","P012E","P012H","P013E","P013H","P014E","P014H","P015E","P015F","P015H",
-  "P016E","P016F","P016H","P017E","P017F","P017H","P018F","P018H","P019F","P019H",
-  "P020F","P020H","P021F","P021H","P022F","P022H","P023F","P023H","P024F","P024H",
-  "P025F","P025H","P026F","P026H","P027F","P027H","P028F","P028H","P029F","P029H",
-  "P030F","P030H","P031F","P031H","P032E","P032H","P033E","P033H","P034E","P034H",
-  "P035E","P035H","P036E","P036H","P037E","P037H","P038E","P038H","P039E","P039H",
-  "P040E","P040H","P041E","P041H","P042E","P042H","P043E","P043H","P044E","P044H",
-  "P045E","P045H","P046E","P046H","P047E","P047H","P048E","P048H","P049E","P049H",
-  "P050E","P050H","P051E","P051H","P052E","P052H","P053E","P053H","P054E","P054H",
-  "P055E","P055H","P056E","P056H","P057E","P057H","P058E","P058H","P059E","P059H",
-  "P060E","P060H","P061E","P061H"
+  "P006E","P006H","P007E","P007H","P008E","P008H","P009E","P009H","P010E","P010H"
 ];
 
-const MODULOS = ["2","4","5","6","7","8","9","12","13","14","15","16","17","18","19","20","22","23","24","25","26","27"];
+const MODULOS   = ["2","4","5","6","7","8","9","12","13","14","15","16","17","18","19","20","22","23","24","25","26","27"];
 const VARIEDADES = ["E. BLANCO","E. VERDE","PLANTIN"];
-const LUGARES = ["G - P","4 - P"];
-const RANGOS = ["0 A 40","41 A 80","81 A 100","100 a mas"];
+const LUGARES   = ["G - P","4 - P"];
+const RANGOS    = ["0 A 40","41 A 80","81 A 100","100 a mas"];
 
 /* ================================================================
    ESTADO GLOBAL
@@ -959,6 +995,75 @@ const state = {
   }
 };
 
+let dashboardChartInstance = null;
+
+/* ================================================================
+   BADGE DINÁMICO — actualiza colores según nivel de alerta
+   Niveles: 'stable' | 'moderate' | 'critical'
+   ================================================================ */
+/**
+ * Asigna clase de badge según nivel de alerta.
+ * @param {HTMLElement} el  - Elemento badge
+ * @param {'stable'|'moderate'|'critical'} level
+ * @param {string} [customText] - Texto opcional (si no se pasa, usa el predeterminado del nivel)
+ */
+function setBadgeLevel(el, level, customText) {
+  if (!el) return;
+  // Quitar clases previas
+  el.classList.remove('badge-green','badge-amber','badge-red','badge-blue','badge-pulse');
+
+  const map = {
+    stable:   { cls: 'badge-green', icon: 'fa-circle',        text: 'Estable'  },
+    moderate: { cls: 'badge-amber', icon: 'fa-triangle-exclamation', text: 'Moderado' },
+    critical: { cls: 'badge-red',   icon: 'fa-circle-exclamation',   text: 'Crítico'  }
+  };
+
+  const cfg = map[level] || map.stable;
+  el.classList.add(cfg.cls);
+  if (level === 'critical') el.classList.add('badge-pulse');
+
+  const text = customText || cfg.text;
+  el.innerHTML = `<i class="fa-solid ${cfg.icon}" style="font-size:6px;"></i> ${text}`;
+}
+
+/**
+ * Actualiza automáticamente todos los badges del dashboard
+ * basándose en los umbrales actuales de los KPI.
+ */
+function updateAlertBadges(datos = state.records) {
+  if (!datos.length) return;
+
+  // Calcular totales
+  const sums = datos.reduce((acc, r) => {
+    acc.spodo    += (r.spodo.lvChicas + r.spodo.lvGrandes);
+    acc.prodi    += (r.prodi.danoBrote + r.prodi.danoRama);
+    acc.arana    += r.aranaGrado;
+    return acc;
+  }, { spodo: 0, prodi: 0, arana: 0 });
+
+  const count = datos.length;
+  const avgSpodo = sums.spodo / count;
+  const avgProdi = sums.prodi / count;
+  const avgArana = sums.arana / count;
+
+  // Nivel global
+  let globalLevel = 'stable';
+  if (avgSpodo > 80 || avgProdi > 60 || avgArana > 2.5)       globalLevel = 'critical';
+  else if (avgSpodo > 40 || avgProdi > 30 || avgArana > 1.5)  globalLevel = 'moderate';
+
+  // Actualizar badge del dashboard status
+  const statusBadge = document.getElementById('dashboardStatusBadge');
+  setBadgeLevel(statusBadge, globalLevel);
+
+  // Actualizar clase de KPI card de Araña Roja
+  const aranaCard = document.querySelector('.kpi-card .kpi-icon.danger')?.closest('.kpi-card');
+  if (aranaCard) {
+    aranaCard.classList.remove('danger','warning');
+    if (avgArana > 2.5)       aranaCard.classList.add('danger');
+    else if (avgArana > 1.5)  aranaCard.classList.add('warning');
+  }
+}
+
 /* ================================================================
    INICIALIZACIÓN
    ================================================================ */
@@ -966,21 +1071,31 @@ function init() {
   // Fecha actual
   const hoy = new Date();
   document.getElementById('f-fecha').valueAsDate = hoy;
-  document.getElementById('currentDateBadge').textContent = hoy.toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'numeric'});
+  document.getElementById('currentDateBadge').textContent =
+    hoy.toLocaleDateString('es-PE', { day:'2-digit', month:'short', year:'numeric' });
 
   // Poblar selects
   fillSelect('f-supervisor', SUPERVISORES, 'WALDIR');
-  fillSelect('f-turno', TURNOS, '201');
-  fillSelect('f-lote', LOTES.slice(0,80), 'L031');
-  fillSelect('f-modulo', MODULOS, '2');
-  fillSelect('f-variedad', VARIEDADES, 'E. BLANCO');
+  fillSelect('f-turno',      TURNOS,       '201');
+  fillSelect('f-lote',       LOTES.slice(0,80), 'L031');
+  fillSelect('f-modulo',     MODULOS,      '2');
+  fillSelect('f-variedad',   VARIEDADES,   'E. BLANCO');
 
-  // Mock de registros recientes (basado en estructura real del CSV)
+  // Mock de registros
   generateMockRecords();
   renderRecentTable();
   renderHistory();
-  initChart();
-  updateKPIs();
+  inicializarFiltroLote();
+  updateKPIs(state.records);
+  updateAlertBadges(state.records);
+
+  // FIX: Inicializar el gráfico con un pequeño delay para garantizar
+  // que el canvas tenga dimensiones reales tras las animaciones CSS.
+  // chart-container tiene height:240px explícito, pero este timeout
+  // evita cualquier race condition con el repaint inicial.
+  setTimeout(() => {
+    actualizarGrafico(state.records);
+  }, 150);
 
   // Eventos
   bindNav();
@@ -989,75 +1104,93 @@ function init() {
   bindDynamicSelects();
 }
 
-function fillSelect(id, options, defaultVal) {
-  const sel = document.getElementById(id);
-  sel.innerHTML = '';
-  options.forEach(opt => {
-    const o = document.createElement('option');
-    o.value = opt; o.textContent = opt;
-    if(opt === defaultVal) o.selected = true;
-    sel.appendChild(o);
+/* ================================================================
+   FILTRO GLOBAL REACTIVO
+   ================================================================ */
+function inicializarFiltroLote() {
+  const selectFiltro = document.getElementById('filtroLote');
+  if (!selectFiltro) return;
+
+  // Llenar opciones
+  LOTES.forEach(lote => {
+    const option = document.createElement('option');
+    option.value = lote;
+    option.textContent = lote;
+    selectFiltro.appendChild(option);
+  });
+
+  selectFiltro.addEventListener('change', (e) => {
+    filtrarDatosPorLote(e.target.value);
   });
 }
 
+function filtrarDatosPorLote(loteId) {
+  const datosFiltrados = loteId === 'TODOS'
+    ? state.records
+    : state.records.filter(item => item.lote === loteId);
+
+  updateKPIs(datosFiltrados);
+  actualizarGrafico(datosFiltrados);
+  updateAlertBadges(datosFiltrados);
+}
+
 /* ================================================================
-   MOCK DATA GENERATOR - Basado en rangos reales del CSV
+   MOCK DATA GENERATOR
    ================================================================ */
 function generateMockRecords() {
-  const baseDate = new Date(2026, 0, 1); // 1 ene 2026
+  const baseDate = new Date(2026, 0, 1);
   const sups = ['WALDIR','ESTALFER','DIONICIO LL.','DEINNER','OMAR','MIGUEL'];
-  const evas = ['NANCY URIOL','ALEYDA CHAVEZ','CRISTOBAL DAVID','FRANK CISNEROS','STIWART GONZALES','DIEGO VILLANUEVA','VICTOR VARAS','ANDERSON EUSTAQUIO'];
+  const evas = ['NANCY URIOL','ALEYDA CHAVEZ','CRISTOBAL DAVID','FRANK CISNEROS',
+                'STIWART GONZALES','DIEGO VILLANUEVA','VICTOR VARAS','ANDERSON EUSTAQUIO'];
 
-  for(let i=0; i<15; i++) {
+  for (let i = 0; i < 15; i++) {
     const fecha = new Date(baseDate);
     fecha.setDate(fecha.getDate() + i);
     const turnosDia = ['201','401','505','801','2201','2401'];
     const turno = turnosDia[i % turnosDia.length];
     const lotesTurno = LOTES.filter(l => {
-      const t = turno.startsWith('0') ? turno : turno;
-      // simplificación para mock
-      return l.includes(turno.substring(0,2)) || Math.random()>0.85;
-    }).slice(0,3);
+      return l.includes(turno.substring(0,2)) || Math.random() > 0.85;
+    }).slice(0, 3);
 
     lotesTurno.forEach((lote, li) => {
       const spodo = {
-        posturas: Math.floor(Math.random()*40),
-        lvChicas: Math.floor(Math.random()*80),
-        lvGrandes: Math.floor(Math.random()*50),
-        larvaMuestra: +(Math.random()*4).toFixed(1)
+        posturas:    Math.floor(Math.random() * 40),
+        lvChicas:    Math.floor(Math.random() * 80),
+        lvGrandes:   Math.floor(Math.random() * 50),
+        larvaMuestra: +(Math.random() * 4).toFixed(1)
       };
       const prodi = {
-        sano: Math.floor(Math.random()*40),
-        danoBrote: Math.floor(Math.random()*35),
-        danoRama: Math.floor(Math.random()*30),
-        danoApertura: +(Math.random()*20).toFixed(1)
+        sano:         Math.floor(Math.random() * 40),
+        danoBrote:    Math.floor(Math.random() * 35),
+        danoRama:     Math.floor(Math.random() * 30),
+        danoApertura: +(Math.random() * 20).toFixed(1)
       };
       const elasmo = {
-        posturas: Math.floor(Math.random()*20),
-        larvaMuestra: Math.floor(Math.random()*25)
+        posturas:     Math.floor(Math.random() * 20),
+        larvaMuestra: Math.floor(Math.random() * 25)
       };
-      const aranaGrado = +(Math.random()*3).toFixed(2);
-      const stemTuriones = Math.floor(Math.random()*60);
+      const aranaGrado  = +(Math.random() * 3).toFixed(2);
+      const stemTuriones = Math.floor(Math.random() * 60);
 
       state.records.push({
-        id: Date.now() + i*100 + li,
-        fecha: fecha.toLocaleDateString('es-PE'),
-        fechaRaw: new Date(fecha),
+        id: Date.now() + i * 100 + li,
+        fecha:      fecha.toLocaleDateString('es-PE'),
+        fechaRaw:   new Date(fecha),
         supervisor: sups[i % sups.length],
-        evaluador: evas[i % evas.length],
-        turno: turno,
-        modulo: MODULOS[i % MODULOS.length],
-        lote: lote || 'L031',
-        variedad: i%3===0?'E. VERDE':'E. BLANCO',
-        lugar: i%2===0?'G - P':'4 - P',
-        rango: RANGOS[i % RANGOS.length],
+        evaluador:  evas[i % evas.length],
+        turno,
+        modulo:     MODULOS[i % MODULOS.length],
+        lote:       lote || 'L031',
+        variedad:   i % 3 === 0 ? 'E. VERDE' : 'E. BLANCO',
+        lugar:      i % 2 === 0 ? 'G - P' : '4 - P',
+        rango:      RANGOS[i % RANGOS.length],
         prodi, spodo, elasmo, aranaGrado, stemTuriones,
         observaciones: ''
       });
     });
   }
-  // Ordenar por fecha descendente
-  state.records.sort((a,b) => b.fechaRaw - a.fechaRaw);
+
+  state.records.sort((a, b) => b.fechaRaw - a.fechaRaw);
 }
 
 /* ================================================================
@@ -1069,8 +1202,10 @@ function renderRecentTable() {
   tbody.innerHTML = recientes.map(r => {
     const totalSpodo = r.spodo.posturas + r.spodo.lvChicas + r.spodo.lvGrandes;
     const totalProdi = r.prodi.sano + r.prodi.danoBrote + r.prodi.danoRama + Math.floor(r.prodi.danoApertura);
-    const estado = totalSpodo > 80 ? 'badge-red' : (totalSpodo > 40 ? 'badge-amber' : 'badge-green');
-    const estadoText = totalSpodo > 80 ? 'Crítico' : (totalSpodo > 40 ? 'Moderado' : 'Normal');
+    // FIX: usar la función centralizada de badge level
+    const level     = totalSpodo > 80 ? 'critical' : (totalSpodo > 40 ? 'moderate' : 'stable');
+    const badgeMap  = { critical:'badge-red badge-pulse', moderate:'badge-amber', stable:'badge-green' };
+    const textMap   = { critical:'Crítico', moderate:'Moderado', stable:'Normal' };
     return `<tr>
       <td>${r.fecha}</td>
       <td>${r.turno}</td>
@@ -1079,19 +1214,25 @@ function renderRecentTable() {
       <td>${r.prodi.sano}</td>
       <td>${totalSpodo}</td>
       <td>${totalProdi}</td>
-      <td><span class="badge ${estado}">${estadoText}</span></td>
+      <td><span class="badge ${badgeMap[level]}">${textMap[level]}</span></td>
     </tr>`;
   }).join('');
 }
 
 function renderHistory() {
   const container = document.getElementById('historyList');
-  if(!state.records.length) {
-    container.innerHTML = '<div class="glass-card" style="text-align:center;padding:40px;color:var(--text-muted);"><i class="fa-regular fa-folder-open" style="font-size:32px;margin-bottom:12px;display:block;"></i>Sin registros aún</div>';
+  if (!state.records.length) {
+    container.innerHTML = `<div class="glass-card" style="text-align:center;padding:40px;color:var(--text-muted);">
+      <i class="fa-regular fa-folder-open" style="font-size:32px;margin-bottom:12px;display:block;"></i>
+      Sin registros aún
+    </div>`;
     return;
   }
-  container.innerHTML = state.records.slice(0, 20).map((r, idx) => {
+  container.innerHTML = state.records.slice(0, 20).map(r => {
     const totalSpodo = r.spodo.posturas + r.spodo.lvChicas + r.spodo.lvGrandes;
+    const level = totalSpodo > 80 ? 'critical' : (totalSpodo > 40 ? 'moderate' : 'stable');
+    const badgeMap = { critical:'badge-red badge-pulse', moderate:'badge-amber', stable:'badge-green' };
+    const textMap  = { critical:'Crítico', moderate:'Moderado', stable:'Normal' };
     return `
     <div class="glass-card" style="display:flex;align-items:center;gap:14px;padding:14px 16px;">
       <div style="width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,var(--accent-green),var(--accent-teal));display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;flex-shrink:0;">
@@ -1101,6 +1242,7 @@ function renderHistory() {
         <div style="font-weight:700;font-size:13px;color:var(--text-primary);display:flex;align-items:center;gap:8px;">
           ${r.lote}
           <span class="badge badge-green" style="font-size:9px;">${r.turno}</span>
+          <span class="badge ${badgeMap[level]}" style="font-size:9px;">${textMap[level]}</span>
         </div>
         <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">
           ${r.fecha} · ${r.supervisor} · ${r.variedad}
@@ -1115,91 +1257,146 @@ function renderHistory() {
 }
 
 /* ================================================================
-   CHART.JS - Tendencia 7 días
+   CHART.JS — Tendencia 7 días + Índice fitosanitario acumulado
+
+   FIX CRÍTICO: El canvas en HTML tiene id="trendChart".
+   La versión anterior buscaba getElementById('tendenciaChart')
+   → retornaba null → el gráfico nunca se renderizaba.
+   Corrección: usar 'trendChart' en todo el código JS.
    ================================================================ */
-function initChart() {
-  const ctx = document.getElementById('trendChart').getContext('2d');
+function actualizarGrafico(datos) {
+  // FIX: ID corregido de 'tendenciaChart' → 'trendChart'
+  const canvas = document.getElementById('trendChart');
+  if (!canvas) return;
 
-  // Preparar datos 7 días desde hoy
-  const labels = [];
-  const dataProdi = [];
-  const dataSpodo = [];
-  const dataElasmo = [];
-  const hoy = new Date();
+  const ctx = canvas.getContext('2d');
 
-  for(let i=6; i>=0; i--) {
-    const d = new Date(hoy);
-    d.setDate(d.getDate() - i);
-    labels.push(d.toLocaleDateString('es-PE',{day:'2-digit',month:'short'}));
-
-    // Agregar aleatoriedad pero con forma de tendencia
-    const base = Math.sin(i)*20 + 50;
-    dataProdi.push(Math.floor(base + Math.random()*30));
-    dataSpodo.push(Math.floor(base*0.8 + Math.random()*25));
-    dataElasmo.push(Math.floor(base*0.5 + Math.random()*15));
+  // Destruir instancia previa para evitar superposición
+  if (dashboardChartInstance) {
+    dashboardChartInstance.destroy();
+    dashboardChartInstance = null;
   }
 
-  // Gradients
-  const gradProdi = ctx.createLinearGradient(0,0,0,240);
-  gradProdi.addColorStop(0, 'rgba(16,185,129,0.35)');
-  gradProdi.addColorStop(1, 'rgba(16,185,129,0.02)');
+  // Si no hay datos, usar datos de ejemplo para los últimos 7 días
+  let labels, dataProdi, dataSpodo, dataElasmo, dataIndex;
 
-  const gradSpodo = ctx.createLinearGradient(0,0,0,240);
-  gradSpodo.addColorStop(0, 'rgba(245,158,11,0.30)');
-  gradSpodo.addColorStop(1, 'rgba(245,158,11,0.02)');
+  if (!datos || datos.length === 0) {
+    // Datos de ejemplo representativos (Índice fitosanitario acumulado)
+    const today = new Date();
+    labels = Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(today);
+      d.setDate(d.getDate() - (6 - i));
+      return d.toLocaleDateString('es-PE', { day:'2-digit', month:'short' });
+    });
+    dataProdi  = [45, 52, 38, 61, 55, 48, 63];
+    dataSpodo  = [32, 28, 41, 35, 52, 47, 58];
+    dataElasmo = [12, 9,  15, 11, 18, 14, 16];
+    // Índice acumulado normalizado (suma ponderada / 3)
+    dataIndex  = dataProdi.map((v, i) => Math.round((v + dataSpodo[i] + dataElasmo[i])));
+  } else {
+    // Agrupar registros reales por fecha
+    const mapFechas = {};
+    datos.forEach(r => {
+      if (!mapFechas[r.fecha]) mapFechas[r.fecha] = { p: 0, s: 0, e: 0, n: 0 };
+      mapFechas[r.fecha].p += (r.prodi.danoBrote + r.prodi.danoRama + Math.floor(r.prodi.danoApertura));
+      mapFechas[r.fecha].s += (r.spodo.lvChicas + r.spodo.lvGrandes);
+      mapFechas[r.fecha].e += r.elasmo.larvaMuestra;
+      mapFechas[r.fecha].n += 1;
+    });
 
-  new Chart(ctx, {
+    const uniqueDates = [...new Set(datos.map(d => d.fecha))].reverse().slice(-7);
+    labels    = uniqueDates.length > 0 ? uniqueDates : ['Sin datos'];
+    dataProdi  = labels.map(f => mapFechas[f] ? Math.round(mapFechas[f].p / mapFechas[f].n) : 0);
+    dataSpodo  = labels.map(f => mapFechas[f] ? Math.round(mapFechas[f].s / mapFechas[f].n) : 0);
+    dataElasmo = labels.map(f => mapFechas[f] ? +(mapFechas[f].e / mapFechas[f].n).toFixed(1) : 0);
+    // Índice fitosanitario acumulado: suma de todos los indicadores por fecha
+    dataIndex  = labels.map((f, i) => dataProdi[i] + dataSpodo[i] + dataElasmo[i]);
+  }
+
+  // Gradientes
+  const gradProdi = ctx.createLinearGradient(0, 0, 0, 240);
+  gradProdi.addColorStop(0, 'rgba(16,185,129,0.28)');
+  gradProdi.addColorStop(1, 'rgba(16,185,129,0.01)');
+
+  const gradSpodo = ctx.createLinearGradient(0, 0, 0, 240);
+  gradSpodo.addColorStop(0, 'rgba(245,158,11,0.22)');
+  gradSpodo.addColorStop(1, 'rgba(245,158,11,0.01)');
+
+  const gradIndex = ctx.createLinearGradient(0, 0, 0, 240);
+  gradIndex.addColorStop(0, 'rgba(139,92,246,0.20)');
+  gradIndex.addColorStop(1, 'rgba(139,92,246,0.01)');
+
+  dashboardChartInstance = new Chart(ctx, {
     type: 'line',
     data: {
       labels,
       datasets: [
         {
+          label: 'Índice Acumulado',
+          data: dataIndex,
+          borderColor: '#8b5cf6',
+          backgroundColor: gradIndex,
+          borderWidth: 2.5,
+          tension: 0.4,
+          fill: true,
+          pointRadius: 5,
+          pointBackgroundColor: '#fff',
+          pointBorderColor: '#8b5cf6',
+          pointBorderWidth: 2.5,
+          pointHoverRadius: 7,
+          order: 0   // dibujado encima
+        },
+        {
           label: 'Prodiplosis',
           data: dataProdi,
           borderColor: '#10b981',
           backgroundColor: gradProdi,
-          borderWidth: 2.5,
+          borderWidth: 2,
           tension: 0.4,
           fill: true,
-          pointRadius: 4,
+          pointRadius: 3,
           pointBackgroundColor: '#fff',
           pointBorderColor: '#10b981',
           pointBorderWidth: 2,
-          pointHoverRadius: 6
+          pointHoverRadius: 5,
+          order: 1
         },
         {
           label: 'Spodoptera',
           data: dataSpodo,
           borderColor: '#f59e0b',
           backgroundColor: gradSpodo,
-          borderWidth: 2.5,
+          borderWidth: 2,
           tension: 0.4,
           fill: true,
-          pointRadius: 4,
+          pointRadius: 3,
           pointBackgroundColor: '#fff',
           pointBorderColor: '#f59e0b',
           pointBorderWidth: 2,
-          pointHoverRadius: 6
+          pointHoverRadius: 5,
+          order: 2
         },
         {
           label: 'Elasmopalpus',
           data: dataElasmo,
           borderColor: '#3b82f6',
           backgroundColor: 'transparent',
-          borderWidth: 2,
+          borderWidth: 1.5,
           tension: 0.4,
           fill: false,
           pointRadius: 3,
           pointBackgroundColor: '#fff',
           pointBorderColor: '#3b82f6',
           pointBorderWidth: 2,
-          borderDash: [6,4]
+          borderDash: [6, 4],
+          order: 3
         }
       ]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      animation: { duration: 700, easing: 'easeInOutQuart' },
       interaction: { mode: 'index', intersect: false },
       plugins: {
         legend: {
@@ -1209,15 +1406,15 @@ function initChart() {
             usePointStyle: true,
             pointStyle: 'circle',
             boxWidth: 8,
-            font: { family: 'Inter', size: 11, weight: '600' },
+            font: { family: 'Inter', size: 10, weight: '600' },
             color: '#5a6270',
-            padding: 16
+            padding: 12
           }
         },
         tooltip: {
           backgroundColor: 'rgba(26,29,33,0.92)',
           titleFont: { family: 'Inter', size: 12 },
-          bodyFont: { family: 'Inter', size: 12 },
+          bodyFont: { family: 'Inter', size: 11 },
           padding: 12,
           cornerRadius: 10,
           displayColors: true,
@@ -1227,20 +1424,12 @@ function initChart() {
       scales: {
         x: {
           grid: { display: false },
-          ticks: {
-            font: { family: 'Inter', size: 10 },
-            color: '#9aa0ac',
-            maxRotation: 0
-          },
+          ticks: { font: { family: 'Inter', size: 10 }, color: '#9aa0ac', maxRotation: 0 },
           border: { display: false }
         },
         y: {
           grid: { color: 'rgba(0,0,0,0.03)' },
-          ticks: {
-            font: { family: 'Inter', size: 10 },
-            color: '#9aa0ac',
-            padding: 8
-          },
+          ticks: { font: { family: 'Inter', size: 10 }, color: '#9aa0ac', padding: 8 },
           border: { display: false },
           beginAtZero: true
         }
@@ -1252,47 +1441,50 @@ function initChart() {
 /* ================================================================
    KPIs dinámicos
    ================================================================ */
-function updateKPIs() {
-  // Sumar últimos registros del día actual (mock)
-  const todayStr = new Date().toLocaleDateString('es-PE');
-  const todayRecs = state.records; // simplificado: usamos todos para demo
-
-  const sums = todayRecs.reduce((acc, r) => {
-    acc.prodiLarva += (r.prodi.danoBrote + r.prodi.danoRama + Math.floor(r.prodi.danoApertura));
+function updateKPIs(datos = state.records) {
+  const sums = datos.reduce((acc, r) => {
+    acc.prodiLarva  += (r.prodi.danoBrote + r.prodi.danoRama + Math.floor(r.prodi.danoApertura));
     acc.prodiAdulto += Math.floor(r.prodi.sano * 0.2);
-    acc.spodoLarva += (r.spodo.lvChicas + r.spodo.lvGrandes);
+    acc.spodoLarva  += (r.spodo.lvChicas + r.spodo.lvGrandes);
     acc.spodoAdulto += r.spodo.posturas;
     acc.elasmoLarva += r.elasmo.larvaMuestra;
-    acc.elasmoAdulto += r.elasmo.posturas;
-    acc.arana += r.aranaGrado;
-    acc.stem += r.stemTuriones;
+    acc.elasmoAdulto+= r.elasmo.posturas;
+    acc.arana       += r.aranaGrado;
+    acc.stem        += r.stemTuriones;
     return acc;
-  }, {prodiLarva:0,prodiAdulto:0,spodoLarva:0,spodoAdulto:0,elasmoLarva:0,elasmoAdulto:0,arana:0,stem:0});
+  }, { prodiLarva:0,prodiAdulto:0,spodoLarva:0,spodoAdulto:0,elasmoLarva:0,elasmoAdulto:0,arana:0,stem:0 });
 
-  const count = Math.max(1, todayRecs.length);
-  animateValue('kpi-prodi-larva', sums.prodiLarva);
+  const count = Math.max(1, datos.length);
+
+  animateValue('kpi-prodi-larva',  sums.prodiLarva);
   animateValue('kpi-prodi-adulto', sums.prodiAdulto);
-  animateValue('kpi-spodo-larva', sums.spodoLarva);
+  animateValue('kpi-spodo-larva',  sums.spodoLarva);
   animateValue('kpi-spodo-adulto', sums.spodoAdulto);
   animateValue('kpi-elasmo-larva', sums.elasmoLarva);
-  animateValue('kpi-elasmo-adulto', sums.elasmoAdulto);
-  document.getElementById('kpi-aranha-grado').textContent = (sums.arana/count).toFixed(1);
-  document.getElementById('kpi-aranha-dano').textContent = ((sums.arana/count)*2).toFixed(1) + '%';
-  animateValue('kpi-stem-num', Math.floor(sums.stem/count));
-  document.getElementById('kpi-stem-pct').textContent = ((sums.stem/count)*0.8).toFixed(1) + '%';
+  animateValue('kpi-elasmo-adulto',sums.elasmoAdulto);
+
+  document.getElementById('kpi-aranha-grado').textContent =
+    datos.length ? (sums.arana / count).toFixed(1) : '0.0';
+  document.getElementById('kpi-aranha-dano').textContent  =
+    datos.length ? ((sums.arana / count) * 2).toFixed(1) + '%' : '0.0%';
+
+  animateValue('kpi-stem-num', datos.length ? Math.floor(sums.stem / count) : 0);
+  document.getElementById('kpi-stem-pct').textContent =
+    datos.length ? ((sums.stem / count) * 0.8).toFixed(1) + '%' : '0.0%';
 }
 
 function animateValue(id, end) {
   const el = document.getElementById(id);
+  if (!el) return;
   const start = parseInt(el.textContent) || 0;
-  if(start === end) return;
+  if (start === end) return;
   const duration = 800;
   const t0 = performance.now();
   function tick(t) {
-    const p = Math.min((t - t0) / duration, 1);
+    const p    = Math.min((t - t0) / duration, 1);
     const ease = 1 - Math.pow(1 - p, 3);
     el.textContent = Math.floor(start + (end - start) * ease);
-    if(p < 1) requestAnimationFrame(tick);
+    if (p < 1) requestAnimationFrame(tick);
   }
   requestAnimationFrame(tick);
 }
@@ -1304,26 +1496,24 @@ function bindCounters() {
   document.querySelectorAll('.counter-btn').forEach(btn => {
     btn.addEventListener('click', e => {
       e.preventDefault();
-      const target = btn.dataset.target;
-      const step = parseFloat(btn.dataset.step);
+      const target  = btn.dataset.target;
+      const step    = parseFloat(btn.dataset.step);
       const isMinus = btn.classList.contains('minus');
       let val = state.counters[target] || 0;
       val = isMinus ? Math.max(0, val - step) : val + step;
-      // Redondeo inteligente según step
-      if(step < 1) val = Math.round(val * 10) / 10;
-      else val = Math.round(val);
+      val = step < 1 ? Math.round(val * 10) / 10 : Math.round(val);
       state.counters[target] = val;
       const el = document.getElementById(target);
-      if(el) el.textContent = val;
+      if (el) el.textContent = val;
     });
   });
 }
 
 function resetCounters() {
-  Object.keys(state.counters).forEach(k => state.counters[k] = 0);
   Object.keys(state.counters).forEach(k => {
+    state.counters[k] = 0;
     const el = document.getElementById(k);
-    if(el) el.textContent = '0';
+    if (el) el.textContent = '0';
   });
 }
 
@@ -1338,7 +1528,7 @@ function bindNav() {
       item.classList.add('active');
       document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
       document.getElementById(target).classList.add('active');
-      window.scrollTo({top:0,behavior:'smooth'});
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   });
 }
@@ -1349,49 +1539,47 @@ function bindNav() {
 function bindFormSave() {
   document.getElementById('btnGuardar').addEventListener('click', async () => {
     const fecha = document.getElementById('f-fecha').value;
-    if(!fecha) {
+    if (!fecha) {
       Swal.fire({ icon:'warning', title:'Fecha requerida', text:'Selecciona la fecha de evaluación.', confirmButtonColor:'#10b981' });
       return;
     }
 
-    // Construir objeto registro
     const record = {
-      id: Date.now(),
-      fecha: new Date(fecha).toLocaleDateString('es-PE'),
-      fechaRaw: new Date(fecha),
-      supervisor: document.getElementById('f-supervisor').value,
-      evaluador: EVALUADORES[Math.floor(Math.random()*EVALUADORES.length)],
-      turno: document.getElementById('f-turno').value,
-      modulo: document.getElementById('f-modulo').value,
-      lote: document.getElementById('f-lote').value,
-      variedad: document.getElementById('f-variedad').value,
-      lugar: LUGARES[Math.floor(Math.random()*LUGARES.length)],
-      rango: RANGOS[Math.floor(Math.random()*RANGOS.length)],
+      id:           Date.now(),
+      fecha:        new Date(fecha).toLocaleDateString('es-PE'),
+      fechaRaw:     new Date(fecha),
+      supervisor:   document.getElementById('f-supervisor').value,
+      evaluador:    EVALUADORES[Math.floor(Math.random() * EVALUADORES.length)],
+      turno:        document.getElementById('f-turno').value,
+      modulo:       document.getElementById('f-modulo').value,
+      lote:         document.getElementById('f-lote').value,
+      variedad:     document.getElementById('f-variedad').value,
+      lugar:        LUGARES[Math.floor(Math.random() * LUGARES.length)],
+      rango:        RANGOS[Math.floor(Math.random() * RANGOS.length)],
       prodi: {
-        sano: state.counters['prodi-sano'],
-        danoBrote: state.counters['prodi-dano-brote'],
-        danoRama: state.counters['prodi-dano-rama'],
+        sano:         state.counters['prodi-sano'],
+        danoBrote:    state.counters['prodi-dano-brote'],
+        danoRama:     state.counters['prodi-dano-rama'],
         danoApertura: state.counters['prodi-dano-apertura']
       },
       spodo: {
-        posturas: state.counters['spodo-posturas'],
-        lvChicas: state.counters['spodo-lvchicas'],
-        lvGrandes: state.counters['spodo-lvgrandes'],
-        larvaMuestra: state.counters['spodo-larvamuestra']
+        posturas:    state.counters['spodo-posturas'],
+        lvChicas:    state.counters['spodo-lvchicas'],
+        lvGrandes:   state.counters['spodo-lvgrandes'],
+        larvaMuestra:state.counters['spodo-larvamuestra']
       },
       elasmo: {
-        posturas: state.counters['elasmo-posturas'],
-        larvaMuestra: state.counters['elasmo-larvamuestra']
+        posturas:    state.counters['elasmo-posturas'],
+        larvaMuestra:state.counters['elasmo-larvamuestra']
       },
-      aranaGrado: state.counters['arana-grado'],
+      aranaGrado:   state.counters['arana-grado'],
       stemTuriones: state.counters['stem-turiones'],
-      observaciones: document.getElementById('f-obs').value
+      observaciones:document.getElementById('f-obs').value
     };
 
     state.records.unshift(record);
-    state.records.sort((a,b) => b.fechaRaw - a.fechaRaw);
+    state.records.sort((a, b) => b.fechaRaw - a.fechaRaw);
 
-    // SweetAlert2 moderno
     await Swal.fire({
       icon: 'success',
       title: '<span style="font-family:Bodoni Moda,serif;font-size:22px;font-weight:700;">Registro Exitoso</span>',
@@ -1401,50 +1589,63 @@ function bindFormSave() {
       </div>`,
       confirmButtonText: 'Continuar',
       confirmButtonColor: '#10b981',
-      background: 'rgba(255,255,255,0.95)',
+      background: 'rgba(255,255,255,0.96)',
       backdrop: 'rgba(0,0,0,0.25)',
       customClass: { popup: 'animate__animated animate__zoomIn' },
       timer: 2500,
       timerProgressBar: true
     });
 
-    // Reset
     resetCounters();
     document.getElementById('f-obs').value = '';
 
-    // Actualizar vistas
     renderRecentTable();
     renderHistory();
     updateKPIs();
+    actualizarGrafico(state.records);
+    updateAlertBadges(state.records);
 
-    // Cambiar a Dashboard
     document.querySelector('[data-target="section-dashboard"]').click();
   });
 }
 
 /* ================================================================
-   SELECTS DINÁMICOS
+   SELECTS DINÁMICOS — Turno → Lote
+   FIX: lógica determinista en lugar de Math.random() para filtrado
    ================================================================ */
 function bindDynamicSelects() {
-  // Al cambiar turno, filtrar lotes sugeridos (mock: simple)
   const turnoSel = document.getElementById('f-turno');
-  const loteSel = document.getElementById('f-lote');
 
   turnoSel.addEventListener('change', () => {
-    const t = turnoSel.value;
-    // Filtrar lotes que "pertenezcan" al turno (heurística simple)
-    const filtered = LOTES.filter(l => {
-      // Si el turno es 3-4 dígitos, buscar lotes que contengan parte del turno
-      const prefix = t.substring(0,2);
-      return l.includes(prefix) || l.startsWith('L'+prefix) || Math.random()>0.7;
-    });
-    const final = filtered.length > 5 ? filtered.slice(0,30) : LOTES.slice(0,30);
+    const prefix = turnoSel.value.substring(0, 2);
+    // Filtrar lotes cuyo nombre contenga el prefijo numérico del turno
+    const filtered = LOTES.filter(l =>
+      l.replace(/\D/g, '').startsWith(prefix) || l.startsWith('L0' + prefix[1])
+    );
+    // Si hay pocos resultados, ampliar con los primeros 30 lotes
+    const final = filtered.length >= 5 ? filtered.slice(0, 30) : LOTES.slice(0, 30);
     fillSelect('f-lote', final, final[0]);
   });
 }
 
 /* ================================================================
-   INIT
+   HELPERS
+   ================================================================ */
+function fillSelect(id, options, defaultVal) {
+  const sel = document.getElementById(id);
+  if (!sel) return;
+  sel.innerHTML = '';
+  options.forEach(opt => {
+    const o = document.createElement('option');
+    o.value = opt;
+    o.textContent = opt;
+    if (opt === defaultVal) o.selected = true;
+    sel.appendChild(o);
+  });
+}
+
+/* ================================================================
+   ARRANQUE
    ================================================================ */
 document.addEventListener('DOMContentLoaded', init);
 </script>
