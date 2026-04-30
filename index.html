@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Fitosanidad - Monitoreo de Plagas</title>
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Bodoni+Moda:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet" />
+
+<!-- FontAwesome -->
+<script src="https://kit.fontawesome.com/6adc56840e.js" crossorigin="anonymous"></script>
+
+<!-- Animate.css -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<style>
+  :root {
+    --bg-primary: #f7f8fa;
+    --bg-white: #ffffff;
+    --text-primary: #1a1d21;
+    --text-secondary: #5a6270;
+    --text-muted: #9aa0ac;
+    --accent-green: #10b981;
+    --accent-emerald: #059669;
+    --accent-neon: #34d399;
+    --accent-teal: #0d9488;
+    --glass-bg: rgba(255,255,255,0.55);
+    --glass-border: rgba(255,255,255,0.4);
+    --glass-shadow: 0 8px 32px rgba(0,0,0,0.06);
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --info: #3b82f6;
+    --success: #10b981;
+    --radius-sm: 12px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-xl: 28px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ===== NAVBAR ===== */
+  .navbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: rgba(255,255,255,0.72);
+    backdrop-filter: blur(20px) saturate(1.6);
+    -webkit-backdrop-filter: blur(20px) saturate(1.6);
+    border-bottom: 1px solid rgba(255,255,255,0.5);
+    box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+    padding: 12px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-brand {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .nav-brand-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent-green), var(--accent-teal));
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 18px;
+    box-shadow: 0 4px 12px rgba(16,185,129,0.3);
+  }
+  .nav-brand-text { line-height: 1.1; }
+  .nav-brand-text h1 {
+    font-family: 'Bodoni Moda', serif;
+    font-size: 15px; font-weight: 700; letter-spacing: 0.3px;
+    color: var(--text-primary);
+  }
+  .nav-brand-text span {
+    font-size: 10px; font-weight: 500; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.8px;
+  }
+  .nav-actions {
+    display: flex; gap: 6px;
+  }
+  .nav-btn {
+    width: 38px; height: 38px; border-radius: 10px;
+    border: none; background: rgba(16,185,129,0.08);
+    color: var(--accent-emerald);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .nav-btn:hover, .nav-btn.active {
+    background: linear-gradient(135deg, var(--accent-green), var(--accent-teal));
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(16,185,129,0.35);
+  }
+
+  /* ===== MAIN ===== */
+  .main-content {
+    padding-top: 68px;
+    padding-bottom: 90px;
+    min-height: 100vh;
+  }
+  .section {
+    display: none;
+    animation: fadeIn 0.35s ease;
+  }
+  .section.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  .container {
+    padding: 14px 16px;
+    max-width: 720px; margin: 0 auto;
+  }
+
+  /* ===== CARDS / GLASS ===== */
+  .glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px) saturate(1.4);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--glass-shadow);
+    padding: 18px;
+    margin-bottom: 14px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .glass-card:active { transform: scale(0.995); }
+
+  .section-title {
+    font-family: 'Bodoni Moda', serif;
+    font-size: 20px; font-weight: 700; color: var(--text-primary);
+    margin-bottom: 4px; display: flex; align-items: center; gap: 10px;
+  }
+  .section-subtitle {
+    font-size: 12px; color: var(--text-muted); font-weight: 500;
+    margin-bottom: 16px;
+  }
+
+  /* ===== KPI GRID ===== */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .kpi-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px) saturate(1.3);
+    -webkit-backdrop-filter: blur(12px) saturate(1.3);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--glass-shadow);
+    padding: 16px 14px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease;
+  }
+  .kpi-card:active { transform: scale(0.98); }
+  .kpi-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--accent-green), var(--accent-teal));
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+  }
+  .kpi-card.danger::before { background: linear-gradient(90deg, var(--danger), #f87171); }
+  .kpi-card.warning::before { background: linear-gradient(90deg, var(--warning), #fbbf24); }
+  .kpi-card.info::before { background: linear-gradient(90deg, var(--info), #60a5fa); }
+
+  .kpi-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .kpi-name {
+    font-size: 11px; font-weight: 600; color: var(--text-secondary);
+    text-transform: uppercase; letter-spacing: 0.6px;
+  }
+  .kpi-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; color: #fff;
+    background: linear-gradient(135deg, var(--accent-green), var(--accent-teal));
+    box-shadow: 0 3px 10px rgba(16,185,129,0.25);
+  }
+  .kpi-icon.danger { background: linear-gradient(135deg, #ef4444, #f87171); box-shadow: 0 3px 10px rgba(239,68,68,0.25); }
+  .kpi-icon.warning { background: linear-gradient(135deg, #f59e0b, #fbbf24); box-shadow: 0 3px 10px rgba(245,158,11,0.25); }
+  .kpi-icon.info { background: linear-gradient(135deg, #3b82f6, #60a5fa); box-shadow: 0 3px 10px rgba(59,130,246,0.25); }
+
+  .kpi-counters {
+    display: flex; gap: 8px;
+  }
+  .kpi-counter {
+    flex: 1;
+    background: rgba(255,255,255,0.45);
+    border-radius: 10px;
+    padding: 8px 6px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.35);
+  }
+  .kpi-counter-label {
+    font-size: 9px; font-weight: 600; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.5px;
+    margin-bottom: 2px;
+  }
+  .kpi-counter-value {
+    font-family: 'Bodoni Moda', serif;
+    font-size: 22px; font-weight: 700; color: var(--text-primary);
+    line-height: 1;
+  }
+  .kpi-counter-value.small { font-size: 18px; }
+  .kpi-trend {
+    margin-top: 8px; font-size: 10px; font-weight: 600;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .kpi-trend.up { color: var(--danger); }
+  .kpi-trend.down { color: var(--success); }
+
+  /* KPI Grande Stemphylium */
+  .kpi-featured {
+    grid-column: 1 / -1;
+    display: flex; align-items: center; gap: 16px;
+    padding: 20px 18px;
+  }
+  .kpi-featured .kpi-icon {
+    width: 48px; height: 48px; border-radius: 12px; font-size: 20px;
+    flex-shrink: 0;
+  }
+  .kpi-featured .kpi-main {
+    flex: 1;
+  }
+  .kpi-featured .kpi-name {
+    font-size: 13px; margin-bottom: 4px;
+  }
+  .kpi-featured .kpi-counter-value {
+    font-size: 36px;
+  }
+  .kpi-featured .kpi-counter-label {
+    font-size: 11px;
+  }
+
+  /* ===== CHART ===== */
+  .chart-container {
+    position: relative; height: 240px; width: 100%;
+  }
+
+  /* ===== FORM ===== */
+  .form-group {
+    margin-bottom: 16px;
+  }
+  .form-label {
+    display: block; font-size: 12px; font-weight: 600;
+    color: var(--text-secondary); margin-bottom: 6px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .form-select, .form-input {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(0,0,0,0.06);
+    background: rgba(255,255,255,0.6);
+    backdrop-filter: blur(8px);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px; font-weight: 500;
+    color: var(--text-primary);
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    transition: all 0.2s ease;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
+  }
+  .form-select:focus, .form-input:focus {
+    border-color: var(--accent-green);
+    box-shadow: 0 0 0 3px rgba(16,185,129,0.12), inset 0 1px 2px rgba(0,0,0,0.02);
+    background: rgba(255,255,255,0.85);
+  }
+  .select-wrapper { position: relative; }
+  .select-wrapper::after {
+    content: '\f078'; font-family: 'Font Awesome 6 Free'; font-weight: 900;
+    position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+    font-size: 12px; color: var(--accent-emerald); pointer-events: none;
+  }
+
+  /* ===== COUNTER UI ===== */
+  .counter-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .counter-box {
+    background: rgba(255,255,255,0.45);
+    border: 1px solid rgba(255,255,255,0.4);
+    border-radius: var(--radius-md);
+    padding: 14px 12px;
+    text-align: center;
+    transition: all 0.2s ease;
+  }
+  .counter-box:active { transform: scale(0.98); }
+  .counter-box-title {
+    font-size: 11px; font-weight: 600; color: var(--text-secondary);
+    margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .counter-row {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  .counter-btn {
+    width: 44px; height: 44px; border-radius: 12px;
+    border: none; background: linear-gradient(135deg, var(--accent-green), var(--accent-teal));
+    color: #fff; font-size: 20px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(16,185,129,0.3);
+    transition: all 0.15s ease;
+    user-select: none; -webkit-user-select: none;
+    touch-action: manipulation;
+  }
+  .counter-btn:active { transform: scale(0.92); box-shadow: 0 2px 6px rgba(16,185,129,0.3); }
+  .counter-btn.minus { background: linear-gradient(135deg, #e5e7eb, #d1d5db); color: var(--text-secondary); box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+  .counter-btn.minus:active { box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+
+  .counter-value {
+    font-family: 'Bodoni Moda', serif;
+    font-size: 32px; font-weight: 700; color: var(--text-primary);
+    min-width: 50px; text-align: center; line-height: 1;
+    user-select: none;
+  }
+
+  .counter-full {
+    grid-column: 1 / -1;
+  }
+
+  /* ===== BUTTONS ===== */
+  .btn {
+    width: 100%; padding: 16px 20px; border-radius: var(--radius-sm);
+    border: none; font-family: 'Inter', sans-serif; font-size: 15px;
+    font-weight: 600; cursor: pointer; display: flex; align-items: center;
+    justify-content: center; gap: 10px; transition: all 0.2s ease;
+    position: relative; overflow: hidden; touch-action: manipulation;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent-green), var(--accent-teal));
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(16,185,129,0.35);
+  }
+  .btn-primary:active { transform: translateY(1px); box-shadow: 0 3px 10px rgba(16,185,129,0.3); }
+
+  .btn-secondary {
+    background: rgba(255,255,255,0.6);
+    color: var(--text-secondary);
+    border: 1px solid rgba(0,0,0,0.06);
+  }
+
+  /* ===== BOTTOM NAV ===== */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 1000;
+    background: rgba(255,255,255,0.78);
+    backdrop-filter: blur(24px) saturate(1.6);
+    -webkit-backdrop-filter: blur(24px) saturate(1.6);
+    border-top: 1px solid rgba(255,255,255,0.5);
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.04);
+    display: flex; justify-content: space-around; padding: 8px 0 16px;
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+  }
+  .bottom-nav-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    gap: 4px; padding: 6px 0; border: none; background: none;
+    cursor: pointer; color: var(--text-muted); transition: all 0.2s ease;
+  }
+  .bottom-nav-item.active { color: var(--accent-emerald); }
+  .bottom-nav-item i { font-size: 20px; }
+  .bottom-nav-item span { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+
+  /* ===== TABLE ===== */
+  .table-card { overflow-x: auto; }
+  .data-table {
+    width: 100%; border-collapse: collapse; font-size: 12px;
+  }
+  .data-table th {
+    text-align: left; padding: 10px 8px; font-weight: 600;
+    color: var(--text-secondary); font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.5px; border-bottom: 1px solid rgba(0,0,0,0.05);
+    white-space: nowrap;
+  }
+  .data-table td {
+    padding: 10px 8px; border-bottom: 1px solid rgba(0,0,0,0.03);
+    color: var(--text-primary); font-weight: 500;
+    white-space: nowrap;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  .badge-green { background: rgba(16,185,129,0.1); color: var(--accent-emerald); }
+  .badge-red { background: rgba(239,68,68,0.1); color: var(--danger); }
+  .badge-amber { background: rgba(245,158,11,0.1); color: #b45309; }
+
+  /* ===== UTILS ===== */
+  .flex-between { display: flex; align-items: center; justify-content: space-between; }
+  .mt-2 { margin-top: 8px; }
+  .mt-3 { margin-top: 12px; }
+  .mb-2 { margin-bottom: 8px; }
+  .text-right { text-align: right; }
+
+  /* Animaciones entrada */
+  .animate-in { animation: fadeInUp 0.5s ease both; }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .delay-1 { animation-delay: 0.08s; }
+  .delay-2 { animation-delay: 0.16s; }
+  .delay-3 { animation-delay: 0.24s; }
+  .delay-4 { animation-delay: 0.32s; }
+  .delay-5 { animation-delay: 0.40s; }
+
+  /* Scrollbar limpio */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 4px; }
+
+  @media (min-width: 640px) {
+    .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+    .counter-grid { grid-template-columns: repeat(3, 1fr); }
+    .kpi-featured { grid-column: span 2; }
+  }
+  @media (min-width: 768px) {
+    /* .kpi-featured { grid-column: span 1; } */
+  }
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar animate__animated animate__fadeInDown">
+  <div class="nav-brand">
+    <div class="nav-brand-icon"><i class="fa-solid fa-leaf"></i></div>
+    <div class="nav-brand-text">
+      <h1>Fitosanidad</h1>
+      <span>Monitoreo de Plagas</span>
+    </div>
+  </div>
+  <div class="nav-actions">
+    <button class="nav-btn" id="btnNotif" title="Notificaciones"><i class="fa-regular fa-bell"></i></button>
+    <button class="nav-btn" id="btnUser" title="Usuario"><i class="fa-regular fa-user"></i></button>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="main-content">
+
+  <!-- ===== DASHBOARD SECTION ===== -->
+  <section id="section-dashboard" class="section active">
+    <div class="container">
+      <div class="flex-between mb-2">
+        <div>
+          <h2 class="section-title"><i class="fa-solid fa-chart-pie" style="color:var(--accent-emerald)"></i> Dashboard</h2>
+          <p class="section-subtitle">Evaluaciones fitosanitarias en campo</p>
+        </div>
+        <span class="badge badge-green" id="currentDateBadge"></span>
+      </div>
+
+      <!-- KPIs -->
+      <div class="kpi-grid">
+        <!-- Prodiplosis -->
+        <div class="kpi-card animate-in delay-1">
+          <div class="kpi-header">
+            <span class="kpi-name">Prodiplosis</span>
+            <div class="kpi-icon"><i class="fa-solid fa-bug"></i></div>
+          </div>
+          <div class="kpi-counters">
+            <div class="kpi-counter">
+              <div class="kpi-counter-label">Larvas</div>
+              <div class="kpi-counter-value" id="kpi-prodi-larva">142</div>
+            </div>
+            <div class="kpi-counter">
+              <div class="kpi-counter-label">Adultos</div>
+              <div class="kpi-counter-value" id="kpi-prodi-adulto">38</div>
+            </div>
+          </div>
+          <div class="kpi-trend down"><i class="fa-solid fa-arrow-trend-down"></i> -12% vs ayer</div>
+        </div>
+
+        <!-- Spodoptera -->
+        <div class="kpi-card animate-in delay-2">
+          <div class="kpi-header">
+            <span class="kpi-name">Spodoptera</span>
+            <div class="kpi-icon warning"><i class="fa-solid fa-caterpillar"></i></div>
+          </div>
+          <div class="kpi-counters">
+            <div class="kpi-counter">
+              <div class="kpi-counter-label">Larvas</div>
+              <div class="kpi-counter-value" id="kpi-spodo-larva">89</div>
+            </div>
+            <div class="kpi-counter">
+              <div class="kpi-counter-label">Adultos</div>
+              <div class="kpi-counter-value" id="kpi-spodo-adulto">12</div>
+            </div>
+          </div>
+          <div class="kpi-trend up"><i class="fa-solid fa-arrow-trend-up"></i> +24% vs ayer</div>
+        </div>
+
+        <!-- Elasmopalpus -->
+        <div class="kpi-card animate-in delay-3">
+          <div class="kpi-header">
+            <span class="kpi-name">Elasmopalpus</span>
+            <div class="kpi-icon info"><i class="fa-solid fa-mosquito"></i></div>
+          </div>
+          <div class="kpi-counters">
+            <div class="kpi-counter">
+              <div class="kpi-counter-label">Larvas</div>
+              <div class="kpi-counter-value" id="kpi-elasmo-larva">56</div>
+            </div>
+            <div class="kpi-counter">
+              <div class="kpi-counter-label">Adultos</div>
+              <div class="kpi-counter-value" id="kpi-elasmo-adulto">8</div>
+            </div>
+          </div>
+          <div class="kpi-trend down"><i class="fa-solid fa-arrow-trend-down"></i> -5% vs ayer</div>
+        </div>
+
+        <!-- Araña Roja -->
+        <div class="kpi-card animate-in delay-4">
+          <div class="kpi-header">
+            <span class="kpi-name">Araña Roja</span>
+            <div class="kpi-icon danger"><i class="fa-solid fa-spider"></i></div>
+          </div>
+          <div class="kpi-counters">
+            <div class="kpi-counter">
+              <div class="kpi-counter-label">Grado</div>
+              <div class="kpi-counter-value small" id="kpi-aranha-grado">2.4</div>
+            </div>
+            <div class="kpi-counter">
+              <div class="kpi-counter-label">% Daño</div>
+              <div class="kpi-counter-value small" id="kpi-aranha-dano">4.8%</div>
+            </div>
+          </div>
+          <div class="kpi-trend up"><i class="fa-solid fa-arrow-trend-up"></i> +0.3 grado</div>
+        </div>
+
+        <!-- Stemphylium -->
+        <div class="kpi-card kpi-featured animate-in delay-5">
+          <div class="kpi-icon danger"><i class="fa-solid fa-virus"></i></div>
+          <div class="kpi-main">
+            <div class="kpi-name">Stemphylium</div>
+            <div class="kpi-counters" style="margin-top:8px;">
+              <div class="kpi-counter" style="text-align:left; background:none; border:none; padding:0;">
+                <div class="kpi-counter-value" id="kpi-stem-num" style="font-size:34px;">47</div>
+                <div class="kpi-counter-label">Turiones afectados</div>
+              </div>
+              <div class="kpi-counter" style="text-align:left; background:none; border:none; padding:0;">
+                <div class="kpi-counter-value" id="kpi-stem-pct" style="font-size:34px; color:var(--danger);">18.5%</div>
+                <div class="kpi-counter-label">Incidencia promedio</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chart -->
+      <div class="glass-card animate-in delay-5">
+        <div class="flex-between" style="margin-bottom:14px;">
+          <div>
+            <div class="kpi-name" style="font-size:13px; text-transform:none; color:var(--text-primary);">Tendencia 7 días</div>
+            <div class="section-subtitle" style="margin:0;">Índice fitosanitario acumulado</div>
+          </div>
+          <span class="badge badge-green">Vivo</span>
+        </div>
+        <div class="chart-container">
+          <canvas id="trendChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Resumen rápido tabla -->
+      <div class="glass-card table-card animate-in delay-5">
+        <div class="kpi-name" style="font-size:13px; text-transform:none; color:var(--text-primary); margin-bottom:10px;">
+          <i class="fa-solid fa-list-ul" style="margin-right:6px; color:var(--accent-emerald);"></i>Últimas evaluaciones
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr><th>Fecha</th><th>Turno</th><th>Lote</th><th>Sup.</th><th>Prod.</th><th>Spodo</th><th>Prodi.</th><th>Estado</th></tr>
+          </thead>
+          <tbody id="recentTable">
+            <!-- JS populated -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FORM SECTION ===== -->
+  <section id="section-form" class="section">
+    <div class="container">
+      <div class="mb-2">
+        <h2 class="section-title"><i class="fa-solid fa-pen-to-square" style="color:var(--accent-emerald)"></i> Registro en Campo</h2>
+        <p class="section-subtitle">Captura evaluación fitosanitaria</p>
+      </div>
+
+      <!-- Selects dinámicos -->
+      <div class="glass-card animate-in delay-1">
+        <div class="form-group">
+          <label class="form-label">Fecha evaluación</label>
+          <input type="date" class="form-input" id="f-fecha" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Supervisor</label>
+          <div class="select-wrapper">
+            <select class="form-select" id="f-supervisor"></select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Turno</label>
+          <div class="select-wrapper">
+            <select class="form-select" id="f-turno"></select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Lote</label>
+          <div class="select-wrapper">
+            <select class="form-select" id="f-lote"></select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Módulo</label>
+          <div class="select-wrapper">
+            <select class="form-select" id="f-modulo"></select>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">Variedad</label>
+          <div class="select-wrapper">
+            <select class="form-select" id="f-variedad"></select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contadores -->
+      <div class="glass-card animate-in delay-2">
+        <div class="kpi-name" style="font-size:13px; text-transform:none; color:var(--text-primary); margin-bottom:14px;">
+          <i class="fa-solid fa-bug" style="margin-right:6px; color:var(--accent-emerald);"></i>Prodiplosis
+        </div>
+        <div class="counter-grid">
+          <div class="counter-box">
+            <div class="counter-box-title">Brote Sano</div>
+            <div class="counter-row">
+              <button class="counter-btn minus" data-target="prodi-sano" data-step="1"><i class="fa-solid fa-minus"></i></button>
+              <div class="counter-value" id="prodi-sano">0</div>
+              <button class="counter-btn plus" data-target="prodi-sano" data-step="1"><i class="fa-solid fa-plus"></i></button>
+            </div>
+          </div>
+          <div class="counter-box">
+            <div class="counter-box-title">Daño Brote</div>
+            <div class="counter-row">
+              <button class="counter-btn minus" data-target="prodi-dano-brote" data-step="1"><i class="fa-solid fa-minus"></i></button>
+              <div class="counter-value" id="prodi-dano-brote">0</div>
+              <button class="counter-btn plus" data-target="prodi-dano-brote" data-step="1"><i class="fa-solid fa-plus"></i></button>
+            </div>
+          </div>
+          <div class="counter-box">
+            <div class="counter-box-title">Daño Rama</div>
+            <div class="counter-row">
+              <button class="counter-btn minus" data-target="prodi-dano-rama" data-step="1"><i class="fa-solid fa-minus"></i></button>
+              <div class="counter-value" id="prodi-dano-rama">0</div>
+              <button class="counter-btn plus" data-target="prodi-dano-rama" data-step="1"><i class="fa-solid fa-plus"></i></button>
+            </div>
+          </div>
+          <div class="counter-box">
+            <div class="counter-box-title">Daño Apertura</div>
+            <div class="counter-row">
+              <button class="counter-btn minus" data-target="prodi-dano-apertura" data-step="1"><i class="fa-solid fa-minus"></i></button>
+              <div class="counter-value" id="prodi-dano-apertura">0</div>
+              <button class="counter-btn plus" data-target="prodi-dano-apertura" data-step="1"><i class="fa-solid fa-plus"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card animate-in delay-3">
+        <div class="kpi-name" style="font-size:13px; text-transform:none; color:var(--text-primary); margin-bottom:14px;">
+          <i class="fa-solid fa-caterpillar" style="margin-right:6px; color:var(--warning);"></i>Spodoptera
+        </div>
+        <div class="counter-grid">
+          <div class="counter-box">
+            <div class="counter-box-title">Posturas</div>
+            <div class="counter-row">
+              <button class="counter-btn minus" data-target="spodo-posturas" data-step="1"><i class="fa-solid fa-minus"></i></button>
+              <div class="counter-value" id="spodo-posturas">0</div>
+              <button class="counter-btn plus" data-target="spodo-posturas" data-step="1"><i class="fa-solid fa-plus"></i></button>
+            </div>
+          </div>
+          <div class="counter-box">
+            <div class="counter-box-title">Lv Chicas</div>
+            <div class="counter-row">
+              <button class="counter-btn minus" data-target="spodo-lvchicas" data-step="1"><i class="fa-solid fa-minus"></i></button>
+              <div class="counter-value" id="spodo-lvchicas">0</div>
+              <button class="counter-btn plus" data-target="spodo-lvchicas" data-step="1"><i class="fa-solid fa-plus"></i></button>
+            </div>
+          </div>
+          <div class="counter-box">
+            <div class="counter-box-title">Lv Grandes</div>
+            <div class="counter-row">
+              <button class="counter-btn minus" data-target="spodo-lvgrandes" data-step="1"><i class="fa-solid fa-minus"></i></button>
+              <div class="counter-value" id="spodo-lvgrandes">0</div>
+              <button class="counter-btn plus" data-target="spodo-lvgrandes" data-step="1"><i class="fa-solid fa-plus"></i></button>
+            </div>
+          </div>
+          <div class="counter-box">
+            <div class="counter-box-title">Larvas / Muestra</div>
+            <div class="counter-row">
+              <button class="counter-btn minus" data-target="spodo-larvamuestra" data-step="0.5"><i class="fa-solid fa-minus"></i></button>
+              <div class="counter-value" id="spodo-larvamuestra">0</div>
+              <button class="counter-btn plus" data-target="spodo-larvamuestra" data-step="0.5"><i class="fa-solid fa-plus"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card animate-in delay-4">
+        <div class="kpi-name" style="font-size:13px; text-transform:none; color:var(--text-primary); margin-bottom:14px;">
+          <i class="fa-solid fa-mosquito" style="margin-right:6px; color:var(--info);"></i>Elasmopalpus
+        </div>
+        <div class="counter-grid">
+          <div class="counter-box">
+            <div class="counter-box-title">Posturas</div>
+            <div class="counter-row">
+              <button class="counter-btn minus" data-target="elasmo-posturas" data-step="1"><i class="fa-solid fa-minus"></i></button>
+              <div class="counter-value" id="elasmo-posturas">0</div>
+              <button class="counter-btn plus" data-target="elasmo-posturas" data-step="1"><i class="fa-solid fa-plus"></i></button>
+            </div>
+          </div>
+          <div class="counter-box">
+            <div class="counter-box-title">Larvas Muestra</div>
+            <div class="counter-row">
+              <button class="counter-btn minus" data-target="elasmo-larvamuestra" data-step="1"><i class="fa-solid fa-minus"></i></button>
+              <div class="counter-value" id="elasmo-larvamuestra">0</div>
+              <button class="counter-btn plus" data-target="elasmo-larvamuestra" data-step="1"><i class="fa-solid fa-plus"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card animate-in delay-5">
+        <div class="kpi-name" style="font-size:13px; text-transform:none; color:var(--text-primary); margin-bottom:14px;">
+          <i class="fa-solid fa-spider" style="margin-right:6px; color:var(--danger);"></i>Otros indicadores
+        </div>
+        <div class="counter-grid">
+          <div class="counter-box">
+            <div class="counter-box-title">Araña Roja Grado</div>
+            <div class="counter-row">
+              <button class="counter-btn minus" data-target="arana-grado" data-step="0.1"><i class="fa-solid fa-minus"></i></button>
+              <div class="counter-value" id="arana-grado">0</div>
+              <button class="counter-btn plus" data-target="arana-grado" data-step="0.1"><i class="fa-solid fa-plus"></i></button>
+            </div>
+          </div>
+          <div class="counter-box">
+            <div class="counter-box-title">Stemphylium Turiones</div>
+            <div class="counter-row">
+              <button class="counter-btn minus" data-target="stem-turiones" data-step="1"><i class="fa-solid fa-minus"></i></button>
+              <div class="counter-value" id="stem-turiones">0</div>
+              <button class="counter-btn plus" data-target="stem-turiones" data-step="1"><i class="fa-solid fa-plus"></i></button>
+            </div>
+          </div>
+          <div class="counter-box counter-full">
+            <div class="counter-box-title">Observaciones</div>
+            <input type="text" class="form-input" id="f-obs" placeholder="Escribe observaciones relevantes..." style="margin-top:6px;" />
+          </div>
+        </div>
+      </div>
+
+      <div class="animate-in delay-5" style="margin-top:6px;">
+        <button class="btn btn-primary" id="btnGuardar">
+          <i class="fa-solid fa-check"></i> Guardar Registro
+        </button>
+      </div>
+      <div style="height:24px;"></div>
+    </div>
+  </section>
+
+  <!-- ===== HISTORY SECTION ===== -->
+  <section id="section-history" class="section">
+    <div class="container">
+      <div class="mb-2">
+        <h2 class="section-title"><i class="fa-solid fa-clock-rotate-left" style="color:var(--accent-emerald)"></i> Historial</h2>
+        <p class="section-subtitle">Registros de evaluaciones capturadas</p>
+      </div>
+      <div id="historyList"></div>
+    </div>
+  </section>
+
+</main>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="bottom-nav-item active" data-target="section-dashboard">
+    <i class="fa-solid fa-chart-pie"></i>
+    <span>Dashboard</span>
+  </button>
+  <button class="bottom-nav-item" data-target="section-form">
+    <i class="fa-solid fa-plus-circle"></i>
+    <span>Captura</span>
+  </button>
+  <button class="bottom-nav-item" data-target="section-history">
+    <i class="fa-solid fa-list"></i>
+    <span>Historial</span>
+  </button>
+</nav>
+
+<script>
+/* ================================================================
+   MOCK DATA - Estructura basada en LARVAS.csv, LOTES.csv, GUIA.csv
+   ================================================================ */
+
+const SUPERVISORES = [
+  "WALDIR","ESTALFER","DIONICIO LL.","DEINNER","OMAR","MIGUEL","ADRIAN G.","NINGUNO"
+];
+
+const SUPERVISORES_PROD = [
+  "ROLAN U.","FREDY S.","ALEX C.","HERNAN G.","ELORGIO I.","MOYA B.","PAULINO C.",
+  "WALTER R.","FRANCISCO L.","ALEXANDER A."
+];
+
+const EVALUADORES = [
+  "NANCY URIOL","FREDY SANDOVAL","ALEYDA CHAVEZ","DIONICIO LLAPO","CRISTOBAL DAVID",
+  "GERONIMO MELCHOR","DIEGO VILLANUEVA","FRANK CISNEROS","STIWART GONZALES",
+  "ANDERSON EUSTAQUIO","DENNIS ALVAREZ","VICTOR VARAS","KATHERINE SICCHA",
+  "DAMARI FERNANDEZ","ROLAND ULLOA","ADRIAN GARCIA","ALMER ZAVALETA","CARMEN RODRIGUEZ"
+];
+
+const TURNOS = [
+  "201","202","203","204","205","206",
+  "401","402","403","404","405","406",
+  "501","502","503","504","505","506",
+  "601","602","603","604","605","606",
+  "701","702","703","704","705","706","1707",
+  "801","802","803","804","805","806",
+  "901B","902B","902C","902E","903B","903E","904B","904E","905B","905C","905E","906B","906C",
+  "1201","1202","1203","1204","1205",
+  "1301","1302","1303","1304","1305",
+  "1401","1402","1403","1404","1405","1406",
+  "1501","1502","1503","1504","1505",
+  "1601","1602","1603","1604","1605","1606",
+  "1801","1802","1803","1804","1805","1806",
+  "1901","1902","1903","1904","1905","1906",
+  "2001","2002","2003","2004","2005","2006",
+  "2201","2202","2203","2204","2205","2206",
+  "2301","2302","2303","2304","2305","2306",
+  "2401","2402","2403","2404","2405","2406",
+  "2501","2502","2503","2504","2505","2506",
+  "2601","2602","2603","2604","2605","2606",
+  "2701","2702","2703","2704","2705"
+];
+
+const LOTES = [
+  "L031","L032","L033","L034","L035","L036","L037","L038","L039","L040",
+  "L041","L042","L043","L044","L045","L046","L047","L048","L049","L050",
+  "L051","L052","L053","L054","L055","L056","L057","L058","L059","L060",
+  "L091","L092","L093","L094","L095","L096","L097","L098","L099","L100",
+  "L101","L102","L103","L104","L105","L106","L107","L108","L109","L110",
+  "L111","L112","L113","L114","L115","L116","L117","L118","L119","L120",
+  "L121","L122","L123","L124","L125","L126","L127","L128","L129","L130",
+  "L131","L132","L133","L134","L135","L137","L138","L139","L140","L141",
+  "L142","L143","L144","L145","L146","L147","L148","L149","L150",
+  "L388","L389","L390","L391","L392","L393","L394","L395","L396","L397",
+  "L398","L399","L400","L404","L405","L406","L407","L408","L411","L412",
+  "L413","L414","L415","L416","L420","L421","L422","L423","L424","L425",
+  "L426","L427","L428","L429","L430","L431","L432","L433","L434","L435",
+  "L436","L437","L438","L439","L440","L441","L442","L443","L444","L445",
+  "L446","L447","L448","L449","L450","L451","L452","L453","L454","L455",
+  "L456","L457","L458","L460","L461","L462","L463","L464","L465","L466",
+  "L467","L468","L469","L470","L471","L472","L473","L474","L475","L476",
+  "L477","L478","L479","L480","L481","L482","L483","L484","L485","L486",
+  "L487","L488","L489","L490","L491","L492","L493","L494","L495","L496",
+  "L497","L498","L499","L500","L501","L502","L503","L504","L505","L506",
+  "L507","L508","L509","L510","L511","L512","L513","L514","L515","L516",
+  "L517","L518","L519","L520","L521","L522","L523","L524","L525","L526",
+  "L527","L528","L529","L530","L531","L532","L533","L534","L535","L536",
+  "L537","L538","L539","L540","L541","L542","L543","L544","L545","L546",
+  "L547","L548","L549","L550","L551","L552","L553","L554","L555","L556",
+  "L557","L558","L559","L560","L561","L562","L563","L564","L565","L566",
+  "L567","L568","L569","L570","L571","L572","L573","L574","L575","L576",
+  "L577","L578","L579","L580","L581","L582","L583","L584","L585","L586",
+  "L587","L588","L589","L590","L591","L592","L593","L594","L595","L596",
+  "L597","L598","L599","L600","L601","L602","L603","L604","L605","L606",
+  "L607","L608","L609","L610","L611","L612","L613","L614","L615","L616",
+  "L617","L618","L619","L620","L621","L622","L623","L624","L625","L626",
+  "L627","L628","L629","L630","L631","L632","L633","L634","L635","L636",
+  "L637","L638","L639","L640","L641","L642","L643","L644","L645","L646",
+  "L647","L648","L649","L650","L651","L652","L653","L654","L655","L656",
+  "L657","L658","L659","L660","L661","L662","L663","L664","L665","L666",
+  "L667","L668","L669","L670","L671","L672","L673","L674","L675","L676",
+  "L677","L678","L679","L680","L681","L682","L683","L684","L685","L686",
+  "L687","L688","L689","L690","L691","L692","L693","L694","L695","L696",
+  "L697","L698","L699","L700","L701","L702","L703","L704","L705","L706",
+  "L707","L708","L709","L710","L711","L712","L713","L714","L715","L716",
+  "L717","L718","L719","L720","L721","L722","L723","L724","L725","L726",
+  "L727","L728","L729","L730","L731","L732","L733","L734","L735","L736",
+  "L737","L738","L739","L740","L741","L742","L743","L744","L745","L746",
+  "L747","L748","L749","L750","L751","L752","L753","L754","L755","L756",
+  "L757","L758","L759","L760","L761","L762","L763","L764","L765","L766",
+  "L767","L768","L769","L770","L771","L772","L773","L776","L777","L778",
+  "L779","L780","L781","L782","L783","L784","L787","L788","L789","L790",
+  "L791","L792","L793","L794","L795","L796","L797","L798","L799","L800",
+  "L801","L802","L803","L804","L805","L806","L807","L808","L809","L810",
+  "L811","L812","L813","L814","L815","L816","L817","L818","L819","L820",
+  "L821","L822","L823","L824","L825","L826","L827","L828","L829","L830",
+  "L831","L832","L833","L834","L835","L836","L837","L838","L839","L840",
+  "L841","L842","L843","L844","L845","L846","L847","L848","L849","L850",
+  "L851","L852","L853","L854","L855","L856","L857","L858","L859","L860",
+  "L861","L862","L863","L864","L865","L866","L867","L868","L869","L870",
+  "L871","L872","L873","L874","L875","L876","L877","L878","L879","L880",
+  "L881","L882","L883","L884","L885","L886","L887","L888","L889","L890",
+  "L891","L892","L893","L894","L895","L896","L897","L898","L899","L900",
+  "L901","L902","L903","L904","L905","L906","L907","L908","L909","L910",
+  "L911","L912","L913","L914","L915","L916","L917","L918","L919","L920",
+  "L921","L922","L923","L924","L925","L926","L927","L928","L929","L930",
+  "L931","L932","L933","L934","L935","L936","L937","L938","L939","L940",
+  "L941","L942","L943","L944","L945","L946","L947",
+  "G-001",
+  "P001H","P002E","P002H","P003E","P003H","P004E","P004H","P005E","P005H",
+  "P006E","P006H","P007E","P007H","P008E","P008H","P009E","P009H","P010E","P010H",
+  "P011E","P011H","P012E","P012H","P013E","P013H","P014E","P014H","P015E","P015F","P015H",
+  "P016E","P016F","P016H","P017E","P017F","P017H","P018F","P018H","P019F","P019H",
+  "P020F","P020H","P021F","P021H","P022F","P022H","P023F","P023H","P024F","P024H",
+  "P025F","P025H","P026F","P026H","P027F","P027H","P028F","P028H","P029F","P029H",
+  "P030F","P030H","P031F","P031H","P032E","P032H","P033E","P033H","P034E","P034H",
+  "P035E","P035H","P036E","P036H","P037E","P037H","P038E","P038H","P039E","P039H",
+  "P040E","P040H","P041E","P041H","P042E","P042H","P043E","P043H","P044E","P044H",
+  "P045E","P045H","P046E","P046H","P047E","P047H","P048E","P048H","P049E","P049H",
+  "P050E","P050H","P051E","P051H","P052E","P052H","P053E","P053H","P054E","P054H",
+  "P055E","P055H","P056E","P056H","P057E","P057H","P058E","P058H","P059E","P059H",
+  "P060E","P060H","P061E","P061H"
+];
+
+const MODULOS = ["2","4","5","6","7","8","9","12","13","14","15","16","17","18","19","20","22","23","24","25","26","27"];
+const VARIEDADES = ["E. BLANCO","E. VERDE","PLANTIN"];
+const LUGARES = ["G - P","4 - P"];
+const RANGOS = ["0 A 40","41 A 80","81 A 100","100 a mas"];
+
+/* ================================================================
+   ESTADO GLOBAL
+   ================================================================ */
+const state = {
+  records: [],
+  counters: {
+    'prodi-sano':0, 'prodi-dano-brote':0, 'prodi-dano-rama':0, 'prodi-dano-apertura':0,
+    'spodo-posturas':0, 'spodo-lvchicas':0, 'spodo-lvgrandes':0, 'spodo-larvamuestra':0,
+    'elasmo-posturas':0, 'elasmo-larvamuestra':0,
+    'arana-grado':0, 'stem-turiones':0
+  }
+};
+
+/* ================================================================
+   INICIALIZACIÓN
+   ================================================================ */
+function init() {
+  // Fecha actual
+  const hoy = new Date();
+  document.getElementById('f-fecha').valueAsDate = hoy;
+  document.getElementById('currentDateBadge').textContent = hoy.toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'numeric'});
+
+  // Poblar selects
+  fillSelect('f-supervisor', SUPERVISORES, 'WALDIR');
+  fillSelect('f-turno', TURNOS, '201');
+  fillSelect('f-lote', LOTES.slice(0,80), 'L031');
+  fillSelect('f-modulo', MODULOS, '2');
+  fillSelect('f-variedad', VARIEDADES, 'E. BLANCO');
+
+  // Mock de registros recientes (basado en estructura real del CSV)
+  generateMockRecords();
+  renderRecentTable();
+  renderHistory();
+  initChart();
+  updateKPIs();
+
+  // Eventos
+  bindNav();
+  bindCounters();
+  bindFormSave();
+  bindDynamicSelects();
+}
+
+function fillSelect(id, options, defaultVal) {
+  const sel = document.getElementById(id);
+  sel.innerHTML = '';
+  options.forEach(opt => {
+    const o = document.createElement('option');
+    o.value = opt; o.textContent = opt;
+    if(opt === defaultVal) o.selected = true;
+    sel.appendChild(o);
+  });
+}
+
+/* ================================================================
+   MOCK DATA GENERATOR - Basado en rangos reales del CSV
+   ================================================================ */
+function generateMockRecords() {
+  const baseDate = new Date(2026, 0, 1); // 1 ene 2026
+  const sups = ['WALDIR','ESTALFER','DIONICIO LL.','DEINNER','OMAR','MIGUEL'];
+  const evas = ['NANCY URIOL','ALEYDA CHAVEZ','CRISTOBAL DAVID','FRANK CISNEROS','STIWART GONZALES','DIEGO VILLANUEVA','VICTOR VARAS','ANDERSON EUSTAQUIO'];
+
+  for(let i=0; i<15; i++) {
+    const fecha = new Date(baseDate);
+    fecha.setDate(fecha.getDate() + i);
+    const turnosDia = ['201','401','505','801','2201','2401'];
+    const turno = turnosDia[i % turnosDia.length];
+    const lotesTurno = LOTES.filter(l => {
+      const t = turno.startsWith('0') ? turno : turno;
+      // simplificación para mock
+      return l.includes(turno.substring(0,2)) || Math.random()>0.85;
+    }).slice(0,3);
+
+    lotesTurno.forEach((lote, li) => {
+      const spodo = {
+        posturas: Math.floor(Math.random()*40),
+        lvChicas: Math.floor(Math.random()*80),
+        lvGrandes: Math.floor(Math.random()*50),
+        larvaMuestra: +(Math.random()*4).toFixed(1)
+      };
+      const prodi = {
+        sano: Math.floor(Math.random()*40),
+        danoBrote: Math.floor(Math.random()*35),
+        danoRama: Math.floor(Math.random()*30),
+        danoApertura: +(Math.random()*20).toFixed(1)
+      };
+      const elasmo = {
+        posturas: Math.floor(Math.random()*20),
+        larvaMuestra: Math.floor(Math.random()*25)
+      };
+      const aranaGrado = +(Math.random()*3).toFixed(2);
+      const stemTuriones = Math.floor(Math.random()*60);
+
+      state.records.push({
+        id: Date.now() + i*100 + li,
+        fecha: fecha.toLocaleDateString('es-PE'),
+        fechaRaw: new Date(fecha),
+        supervisor: sups[i % sups.length],
+        evaluador: evas[i % evas.length],
+        turno: turno,
+        modulo: MODULOS[i % MODULOS.length],
+        lote: lote || 'L031',
+        variedad: i%3===0?'E. VERDE':'E. BLANCO',
+        lugar: i%2===0?'G - P':'4 - P',
+        rango: RANGOS[i % RANGOS.length],
+        prodi, spodo, elasmo, aranaGrado, stemTuriones,
+        observaciones: ''
+      });
+    });
+  }
+  // Ordenar por fecha descendente
+  state.records.sort((a,b) => b.fechaRaw - a.fechaRaw);
+}
+
+/* ================================================================
+   RENDERIZADO
+   ================================================================ */
+function renderRecentTable() {
+  const tbody = document.getElementById('recentTable');
+  const recientes = state.records.slice(0, 6);
+  tbody.innerHTML = recientes.map(r => {
+    const totalSpodo = r.spodo.posturas + r.spodo.lvChicas + r.spodo.lvGrandes;
+    const totalProdi = r.prodi.sano + r.prodi.danoBrote + r.prodi.danoRama + Math.floor(r.prodi.danoApertura);
+    const estado = totalSpodo > 80 ? 'badge-red' : (totalSpodo > 40 ? 'badge-amber' : 'badge-green');
+    const estadoText = totalSpodo > 80 ? 'Crítico' : (totalSpodo > 40 ? 'Moderado' : 'Normal');
+    return `<tr>
+      <td>${r.fecha}</td>
+      <td>${r.turno}</td>
+      <td>${r.lote}</td>
+      <td>${r.supervisor}</td>
+      <td>${r.prodi.sano}</td>
+      <td>${totalSpodo}</td>
+      <td>${totalProdi}</td>
+      <td><span class="badge ${estado}">${estadoText}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderHistory() {
+  const container = document.getElementById('historyList');
+  if(!state.records.length) {
+    container.innerHTML = '<div class="glass-card" style="text-align:center;padding:40px;color:var(--text-muted);"><i class="fa-regular fa-folder-open" style="font-size:32px;margin-bottom:12px;display:block;"></i>Sin registros aún</div>';
+    return;
+  }
+  container.innerHTML = state.records.slice(0, 20).map((r, idx) => {
+    const totalSpodo = r.spodo.posturas + r.spodo.lvChicas + r.spodo.lvGrandes;
+    return `
+    <div class="glass-card" style="display:flex;align-items:center;gap:14px;padding:14px 16px;">
+      <div style="width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,var(--accent-green),var(--accent-teal));display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;flex-shrink:0;">
+        <i class="fa-solid fa-clipboard-check"></i>
+      </div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-weight:700;font-size:13px;color:var(--text-primary);display:flex;align-items:center;gap:8px;">
+          ${r.lote}
+          <span class="badge badge-green" style="font-size:9px;">${r.turno}</span>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">
+          ${r.fecha} · ${r.supervisor} · ${r.variedad}
+        </div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        <div style="font-family:'Bodoni Moda',serif;font-size:18px;font-weight:700;color:var(--text-primary);">${totalSpodo}</div>
+        <div style="font-size:9px;color:var(--text-muted);text-transform:uppercase;">Spodoptera</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ================================================================
+   CHART.JS - Tendencia 7 días
+   ================================================================ */
+function initChart() {
+  const ctx = document.getElementById('trendChart').getContext('2d');
+
+  // Preparar datos 7 días desde hoy
+  const labels = [];
+  const dataProdi = [];
+  const dataSpodo = [];
+  const dataElasmo = [];
+  const hoy = new Date();
+
+  for(let i=6; i>=0; i--) {
+    const d = new Date(hoy);
+    d.setDate(d.getDate() - i);
+    labels.push(d.toLocaleDateString('es-PE',{day:'2-digit',month:'short'}));
+
+    // Agregar aleatoriedad pero con forma de tendencia
+    const base = Math.sin(i)*20 + 50;
+    dataProdi.push(Math.floor(base + Math.random()*30));
+    dataSpodo.push(Math.floor(base*0.8 + Math.random()*25));
+    dataElasmo.push(Math.floor(base*0.5 + Math.random()*15));
+  }
+
+  // Gradients
+  const gradProdi = ctx.createLinearGradient(0,0,0,240);
+  gradProdi.addColorStop(0, 'rgba(16,185,129,0.35)');
+  gradProdi.addColorStop(1, 'rgba(16,185,129,0.02)');
+
+  const gradSpodo = ctx.createLinearGradient(0,0,0,240);
+  gradSpodo.addColorStop(0, 'rgba(245,158,11,0.30)');
+  gradSpodo.addColorStop(1, 'rgba(245,158,11,0.02)');
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Prodiplosis',
+          data: dataProdi,
+          borderColor: '#10b981',
+          backgroundColor: gradProdi,
+          borderWidth: 2.5,
+          tension: 0.4,
+          fill: true,
+          pointRadius: 4,
+          pointBackgroundColor: '#fff',
+          pointBorderColor: '#10b981',
+          pointBorderWidth: 2,
+          pointHoverRadius: 6
+        },
+        {
+          label: 'Spodoptera',
+          data: dataSpodo,
+          borderColor: '#f59e0b',
+          backgroundColor: gradSpodo,
+          borderWidth: 2.5,
+          tension: 0.4,
+          fill: true,
+          pointRadius: 4,
+          pointBackgroundColor: '#fff',
+          pointBorderColor: '#f59e0b',
+          pointBorderWidth: 2,
+          pointHoverRadius: 6
+        },
+        {
+          label: 'Elasmopalpus',
+          data: dataElasmo,
+          borderColor: '#3b82f6',
+          backgroundColor: 'transparent',
+          borderWidth: 2,
+          tension: 0.4,
+          fill: false,
+          pointRadius: 3,
+          pointBackgroundColor: '#fff',
+          pointBorderColor: '#3b82f6',
+          pointBorderWidth: 2,
+          borderDash: [6,4]
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          position: 'top',
+          align: 'end',
+          labels: {
+            usePointStyle: true,
+            pointStyle: 'circle',
+            boxWidth: 8,
+            font: { family: 'Inter', size: 11, weight: '600' },
+            color: '#5a6270',
+            padding: 16
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(26,29,33,0.92)',
+          titleFont: { family: 'Inter', size: 12 },
+          bodyFont: { family: 'Inter', size: 12 },
+          padding: 12,
+          cornerRadius: 10,
+          displayColors: true,
+          boxPadding: 4
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: {
+            font: { family: 'Inter', size: 10 },
+            color: '#9aa0ac',
+            maxRotation: 0
+          },
+          border: { display: false }
+        },
+        y: {
+          grid: { color: 'rgba(0,0,0,0.03)' },
+          ticks: {
+            font: { family: 'Inter', size: 10 },
+            color: '#9aa0ac',
+            padding: 8
+          },
+          border: { display: false },
+          beginAtZero: true
+        }
+      }
+    }
+  });
+}
+
+/* ================================================================
+   KPIs dinámicos
+   ================================================================ */
+function updateKPIs() {
+  // Sumar últimos registros del día actual (mock)
+  const todayStr = new Date().toLocaleDateString('es-PE');
+  const todayRecs = state.records; // simplificado: usamos todos para demo
+
+  const sums = todayRecs.reduce((acc, r) => {
+    acc.prodiLarva += (r.prodi.danoBrote + r.prodi.danoRama + Math.floor(r.prodi.danoApertura));
+    acc.prodiAdulto += Math.floor(r.prodi.sano * 0.2);
+    acc.spodoLarva += (r.spodo.lvChicas + r.spodo.lvGrandes);
+    acc.spodoAdulto += r.spodo.posturas;
+    acc.elasmoLarva += r.elasmo.larvaMuestra;
+    acc.elasmoAdulto += r.elasmo.posturas;
+    acc.arana += r.aranaGrado;
+    acc.stem += r.stemTuriones;
+    return acc;
+  }, {prodiLarva:0,prodiAdulto:0,spodoLarva:0,spodoAdulto:0,elasmoLarva:0,elasmoAdulto:0,arana:0,stem:0});
+
+  const count = Math.max(1, todayRecs.length);
+  animateValue('kpi-prodi-larva', sums.prodiLarva);
+  animateValue('kpi-prodi-adulto', sums.prodiAdulto);
+  animateValue('kpi-spodo-larva', sums.spodoLarva);
+  animateValue('kpi-spodo-adulto', sums.spodoAdulto);
+  animateValue('kpi-elasmo-larva', sums.elasmoLarva);
+  animateValue('kpi-elasmo-adulto', sums.elasmoAdulto);
+  document.getElementById('kpi-aranha-grado').textContent = (sums.arana/count).toFixed(1);
+  document.getElementById('kpi-aranha-dano').textContent = ((sums.arana/count)*2).toFixed(1) + '%';
+  animateValue('kpi-stem-num', Math.floor(sums.stem/count));
+  document.getElementById('kpi-stem-pct').textContent = ((sums.stem/count)*0.8).toFixed(1) + '%';
+}
+
+function animateValue(id, end) {
+  const el = document.getElementById(id);
+  const start = parseInt(el.textContent) || 0;
+  if(start === end) return;
+  const duration = 800;
+  const t0 = performance.now();
+  function tick(t) {
+    const p = Math.min((t - t0) / duration, 1);
+    const ease = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.floor(start + (end - start) * ease);
+    if(p < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+/* ================================================================
+   CONTADORES UI
+   ================================================================ */
+function bindCounters() {
+  document.querySelectorAll('.counter-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.preventDefault();
+      const target = btn.dataset.target;
+      const step = parseFloat(btn.dataset.step);
+      const isMinus = btn.classList.contains('minus');
+      let val = state.counters[target] || 0;
+      val = isMinus ? Math.max(0, val - step) : val + step;
+      // Redondeo inteligente según step
+      if(step < 1) val = Math.round(val * 10) / 10;
+      else val = Math.round(val);
+      state.counters[target] = val;
+      const el = document.getElementById(target);
+      if(el) el.textContent = val;
+    });
+  });
+}
+
+function resetCounters() {
+  Object.keys(state.counters).forEach(k => state.counters[k] = 0);
+  Object.keys(state.counters).forEach(k => {
+    const el = document.getElementById(k);
+    if(el) el.textContent = '0';
+  });
+}
+
+/* ================================================================
+   NAVEGACIÓN
+   ================================================================ */
+function bindNav() {
+  document.querySelectorAll('.bottom-nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const target = item.dataset.target;
+      document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
+      item.classList.add('active');
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById(target).classList.add('active');
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+  });
+}
+
+/* ================================================================
+   FORM SAVE
+   ================================================================ */
+function bindFormSave() {
+  document.getElementById('btnGuardar').addEventListener('click', async () => {
+    const fecha = document.getElementById('f-fecha').value;
+    if(!fecha) {
+      Swal.fire({ icon:'warning', title:'Fecha requerida', text:'Selecciona la fecha de evaluación.', confirmButtonColor:'#10b981' });
+      return;
+    }
+
+    // Construir objeto registro
+    const record = {
+      id: Date.now(),
+      fecha: new Date(fecha).toLocaleDateString('es-PE'),
+      fechaRaw: new Date(fecha),
+      supervisor: document.getElementById('f-supervisor').value,
+      evaluador: EVALUADORES[Math.floor(Math.random()*EVALUADORES.length)],
+      turno: document.getElementById('f-turno').value,
+      modulo: document.getElementById('f-modulo').value,
+      lote: document.getElementById('f-lote').value,
+      variedad: document.getElementById('f-variedad').value,
+      lugar: LUGARES[Math.floor(Math.random()*LUGARES.length)],
+      rango: RANGOS[Math.floor(Math.random()*RANGOS.length)],
+      prodi: {
+        sano: state.counters['prodi-sano'],
+        danoBrote: state.counters['prodi-dano-brote'],
+        danoRama: state.counters['prodi-dano-rama'],
+        danoApertura: state.counters['prodi-dano-apertura']
+      },
+      spodo: {
+        posturas: state.counters['spodo-posturas'],
+        lvChicas: state.counters['spodo-lvchicas'],
+        lvGrandes: state.counters['spodo-lvgrandes'],
+        larvaMuestra: state.counters['spodo-larvamuestra']
+      },
+      elasmo: {
+        posturas: state.counters['elasmo-posturas'],
+        larvaMuestra: state.counters['elasmo-larvamuestra']
+      },
+      aranaGrado: state.counters['arana-grado'],
+      stemTuriones: state.counters['stem-turiones'],
+      observaciones: document.getElementById('f-obs').value
+    };
+
+    state.records.unshift(record);
+    state.records.sort((a,b) => b.fechaRaw - a.fechaRaw);
+
+    // SweetAlert2 moderno
+    await Swal.fire({
+      icon: 'success',
+      title: '<span style="font-family:Bodoni Moda,serif;font-size:22px;font-weight:700;">Registro Exitoso</span>',
+      html: `<div style="font-family:Inter,sans-serif;font-size:14px;color:#5a6270;">
+        Evaluación <b>${record.lote}</b> guardada.<br/>
+        <span style="font-size:12px;color:#9aa0ac;">${record.fecha} · Turno ${record.turno}</span>
+      </div>`,
+      confirmButtonText: 'Continuar',
+      confirmButtonColor: '#10b981',
+      background: 'rgba(255,255,255,0.95)',
+      backdrop: 'rgba(0,0,0,0.25)',
+      customClass: { popup: 'animate__animated animate__zoomIn' },
+      timer: 2500,
+      timerProgressBar: true
+    });
+
+    // Reset
+    resetCounters();
+    document.getElementById('f-obs').value = '';
+
+    // Actualizar vistas
+    renderRecentTable();
+    renderHistory();
+    updateKPIs();
+
+    // Cambiar a Dashboard
+    document.querySelector('[data-target="section-dashboard"]').click();
+  });
+}
+
+/* ================================================================
+   SELECTS DINÁMICOS
+   ================================================================ */
+function bindDynamicSelects() {
+  // Al cambiar turno, filtrar lotes sugeridos (mock: simple)
+  const turnoSel = document.getElementById('f-turno');
+  const loteSel = document.getElementById('f-lote');
+
+  turnoSel.addEventListener('change', () => {
+    const t = turnoSel.value;
+    // Filtrar lotes que "pertenezcan" al turno (heurística simple)
+    const filtered = LOTES.filter(l => {
+      // Si el turno es 3-4 dígitos, buscar lotes que contengan parte del turno
+      const prefix = t.substring(0,2);
+      return l.includes(prefix) || l.startsWith('L'+prefix) || Math.random()>0.7;
+    });
+    const final = filtered.length > 5 ? filtered.slice(0,30) : LOTES.slice(0,30);
+    fillSelect('f-lote', final, final[0]);
+  });
+}
+
+/* ================================================================
+   INIT
+   ================================================================ */
+document.addEventListener('DOMContentLoaded', init);
+</script>
+
+</body>
+</html>
