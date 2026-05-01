@@ -8,7 +8,7 @@
 <!-- Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Bodoni+Moda:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
 <!-- FontAwesome -->
 <script src="https://kit.fontawesome.com/6adc56840e.js" crossorigin="anonymous"></script>
@@ -49,7 +49,7 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   html, body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Poppins', sans-serif;
     background: var(--bg-primary);
     color: var(--text-primary);
     overflow-x: hidden;
@@ -80,7 +80,7 @@
   }
   .nav-brand-text { line-height: 1.1; }
   .nav-brand-text h1 {
-    font-family: 'Bodoni Moda', serif;
+    font-family: 'Poppins', sans-serif;
     font-size: 15px; font-weight: 700; letter-spacing: 0.3px;
     color: var(--text-primary);
   }
@@ -154,7 +154,7 @@
   .glass-card:active { transform: scale(0.995); }
 
   .section-title {
-    font-family: 'Bodoni Moda', serif;
+    font-family: 'Poppins', sans-serif;
     font-size: 20px; font-weight: 700; color: var(--text-primary);
     margin-bottom: 4px; display: flex; align-items: center; gap: 10px;
   }
@@ -260,7 +260,7 @@
     margin-bottom: 2px;
   }
   .kpi-counter-value {
-    font-family: 'Bodoni Moda', serif;
+    font-family: 'Poppins', sans-serif;
     font-size: 22px; font-weight: 700; color: var(--text-primary);
     line-height: 1;
   }
@@ -371,7 +371,7 @@
   .counter-btn.minus:active { box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
 
   .counter-value {
-    font-family: 'Bodoni Moda', serif;
+    font-family: 'Poppins', sans-serif;
     font-size: 32px; font-weight: 700; color: var(--text-primary);
     min-width: 50px; text-align: center; line-height: 1;
     user-select: none;
@@ -1249,7 +1249,7 @@ function renderHistory() {
         </div>
       </div>
       <div style="text-align:right;flex-shrink:0;">
-        <div style="font-family:'Bodoni Moda',serif;font-size:18px;font-weight:700;color:var(--text-primary);">${totalSpodo}</div>
+        <div style="font-family:'Poppins',serif;font-size:18px;font-weight:700;color:var(--text-primary);">${totalSpodo}</div>
         <div style="font-size:9px;color:var(--text-muted);text-transform:uppercase;">Spodoptera</div>
       </div>
     </div>`;
@@ -1406,15 +1406,15 @@ function actualizarGrafico(datos) {
             usePointStyle: true,
             pointStyle: 'circle',
             boxWidth: 8,
-            font: { family: 'Inter', size: 10, weight: '600' },
+            font: { family: 'Poppins', size: 10, weight: '600' },
             color: '#5a6270',
             padding: 12
           }
         },
         tooltip: {
           backgroundColor: 'rgba(26,29,33,0.92)',
-          titleFont: { family: 'Inter', size: 12 },
-          bodyFont: { family: 'Inter', size: 11 },
+          titleFont: { family: 'Poppins', size: 12 },
+          bodyFont: { family: 'Poppins', size: 11 },
           padding: 12,
           cornerRadius: 10,
           displayColors: true,
@@ -1424,12 +1424,12 @@ function actualizarGrafico(datos) {
       scales: {
         x: {
           grid: { display: false },
-          ticks: { font: { family: 'Inter', size: 10 }, color: '#9aa0ac', maxRotation: 0 },
+          ticks: { font: { family: 'Poppins', size: 10 }, color: '#9aa0ac', maxRotation: 0 },
           border: { display: false }
         },
         y: {
           grid: { color: 'rgba(0,0,0,0.03)' },
-          ticks: { font: { family: 'Inter', size: 10 }, color: '#9aa0ac', padding: 8 },
+          ticks: { font: { family: 'Poppins', size: 10 }, color: '#9aa0ac', padding: 8 },
           border: { display: false },
           beginAtZero: true
         }
@@ -1582,8 +1582,8 @@ function bindFormSave() {
 
     await Swal.fire({
       icon: 'success',
-      title: '<span style="font-family:Bodoni Moda,serif;font-size:22px;font-weight:700;">Registro Exitoso</span>',
-      html: `<div style="font-family:Inter,sans-serif;font-size:14px;color:#5a6270;">
+      title: '<span style="font-family:Poppins,serif;font-size:22px;font-weight:700;">Registro Exitoso</span>',
+      html: `<div style="font-family:Poppins,sans-serif;font-size:14px;color:#5a6270;">
         Evaluación <b>${record.lote}</b> guardada.<br/>
         <span style="font-size:12px;color:#9aa0ac;">${record.fecha} · Turno ${record.turno}</span>
       </div>`,
